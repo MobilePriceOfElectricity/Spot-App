@@ -69,12 +69,16 @@ const PricesScreen = () => {
 
     // Hakee ajan mukaan dataa eri kohdasta
     let today = '';
-    let tomorrow = ''
-    if (hour < '14') {
+    if (hour < '14' && hour > '00') {
         today = answer.slice(-24).map(val => ((100 + alv) / 100 * val.value * 0.1));
-        tomorrow = new Array(24).fill(0);
     } else {
         today = answer.slice(-48, -24).map(val => ((100 + alv) / 100 * val.value * 0.1));
+    // Hakee ennusteen ajan mukaan
+    }
+    let tomorrow = ''
+    if (hour < '14') {
+        tomorrow = new Array(24).fill(0);
+    } else {
         tomorrow = answer.slice(-24).map(val => ((100 + alv) / 100 * val.value * 0.1));
     }
 
@@ -83,9 +87,16 @@ const PricesScreen = () => {
 
     // Tämän hetkinen hinta
     const period = allData.map(period => period.children);
-
-    let point = period[32].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
-
+    //console.log(period)
+    
+    let point = ''
+    if (hour > '14' && hour < '22') {
+        point = period[32].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
+    } else {
+        point = period[31].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
+    }
+    
+    //console.log(point)
 
     let newData = []
     for (let i = 2; i < point.length; i++) {
@@ -98,6 +109,8 @@ const PricesScreen = () => {
     let sum = ''
     for (let i = 0; i < newData.length; i++)
         if (hour === newData[i].time) {
+            sum = newData[i].price
+        } else if (hour === '00') {
             sum = newData[i].price
         }
 
