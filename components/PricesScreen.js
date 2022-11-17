@@ -62,31 +62,33 @@ const PricesScreen = () => {
 
     // Alv arvot
     const alvData = [
-        { label: 'Alv 24%', value: 24},
-        { label: 'Alv 10%', value: 10},     
+        { label: 'Alv 24%', value: 24 },
+        { label: 'Alv 10%', value: 10 },
         { label: 'Alv 0%', value: 1 }];
-    
+
 
     // Hakee ajan mukaan dataa eri kohdasta
     let today = '';
+    let tomorrow = ''
     if (hour < '14') {
-        today = answer.slice(-24).map(val => ((100 + alv ) / 100 * val.value * 0.1));
+        today = answer.slice(-24).map(val => ((100 + alv) / 100 * val.value * 0.1));
+        tomorrow = new Array(24).fill(0);
     } else {
-        today = answer.slice(-48, -24).map(val => ((100 + alv ) / 100 * val.value * 0.1));
+        today = answer.slice(-48, -24).map(val => ((100 + alv) / 100 * val.value * 0.1));
+        tomorrow = answer.slice(-24).map(val => ((100 + alv) / 100 * val.value * 0.1));
     }
 
     const lastWeek = answer.slice(-168).map(val => val.value);
     const last31 = answer.slice(-744).map(val => val.value);
-    const tomorrow = answer.slice(-24).map(val => ((100 + alv ) / 100 * val.value * 0.1));
 
     // Tämän hetkinen hinta
     const period = allData.map(period => period.children);
-
+    console.log(period)
     let point = ''
     if (hour < '14') {
-        point = period[33].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
-    } else {
         point = period[32].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
+    } else {
+        point = period[31].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
     }
 
     let newData = []
@@ -105,8 +107,15 @@ const PricesScreen = () => {
 
     // Min, AVG, MAX
     // Today
-    const todayMax = Math.max(...answer.slice(-48, -24).map(val => val.value));
-    const todayMin = Math.min(...answer.slice(-48, -24).map(val => val.value));
+    let todayMin = '';
+    let todayMax = '';
+    if (hour < '14') {
+        todayMin = Math.min(...answer.slice(-24).map(val => val.value));
+        todayMax = Math.max(...answer.slice(-24).map(val => val.value));
+    } else {
+        todayMin = Math.min(...answer.slice(-48, -24).map(val => val.value));
+        todayMax = Math.max(...answer.slice(-48, -24).map(val => val.value));
+    }
     const avgToday = eval(today.join('+')) / today.length
     // Last Week
     const weekMax = Math.max(...answer.slice(-168).map(val => val.value));
@@ -125,8 +134,8 @@ const PricesScreen = () => {
         datasets: [
             {
                 data: [((100 + alv) / 100 * todayMin * 0.1).toFixed(2),
-                ((100 + alv ) / 100 * avgToday).toFixed(2),
-                ((100 + alv ) / 100 * todayMax * 0.1).toFixed(2)]
+                ((100 + alv) / 100 * avgToday).toFixed(2),
+                ((100 + alv) / 100 * todayMax * 0.1).toFixed(2)]
             },
         ]
     };
@@ -136,9 +145,9 @@ const PricesScreen = () => {
         labels: ["Alin", "Avg", "Ylin"],
         datasets: [
             {
-                data: [((100 + alv ) / 100 * weekMin * 0.1).toFixed(2),
-                ((100 + alv ) / 100 * avgLastWeek * 0.1).toFixed(2),
-                ((100 + alv ) / 100 * weekMax * 0.1).toFixed(2)]
+                data: [((100 + alv) / 100 * weekMin * 0.1).toFixed(2),
+                ((100 + alv) / 100 * avgLastWeek * 0.1).toFixed(2),
+                ((100 + alv) / 100 * weekMax * 0.1).toFixed(2)]
             }
         ]
     };
@@ -146,7 +155,7 @@ const PricesScreen = () => {
     const dataNow = {
         labels: ["Hinta nyt"], // optional
         datasets: [
-            { data: [((100 + alv ) / 100 * sum * 0.1).toFixed(2)] }
+            { data: [((100 + alv) / 100 * sum * 0.1).toFixed(2)] }
         ]
     };
 
@@ -155,9 +164,9 @@ const PricesScreen = () => {
         labels: ["Alin", "Avg", "Ylin"],
         datasets: [
             {
-                data: [((100 + alv ) / 100 * monthMin * 0.1).toFixed(2),
-                ((100 + alv ) / 100 * avgMonth * 0.1).toFixed(2),
-                ((100 + alv ) / 100 * monthMax * 0.1).toFixed(2)]
+                data: [((100 + alv) / 100 * monthMin * 0.1).toFixed(2),
+                ((100 + alv) / 100 * avgMonth * 0.1).toFixed(2),
+                ((100 + alv) / 100 * monthMax * 0.1).toFixed(2)]
             }
         ]
     };
@@ -178,17 +187,17 @@ const PricesScreen = () => {
         <View style={styles.container}>
             <ScrollView>
                 <View>
-                <RadioForm
-            //style={theme.radio}
-            buttonSize={10}
-            radio_props={alvData}
-            initial={0}
-            onPress={(value) => { setAlv(value) }}
-            buttonColor={'#ef7503'}
-            selectedButtonColor={'#b64600'}
-            //labelColor={isOn ? "#ef7503" : "black"}
-            //selectedLabelColor={isOn ? "#ef7503" : "black"}
-          />
+                    <RadioForm
+                        //style={theme.radio}
+                        buttonSize={10}
+                        radio_props={alvData}
+                        initial={0}
+                        onPress={(value) => { setAlv(value) }}
+                        buttonColor={'#ef7503'}
+                        selectedButtonColor={'#b64600'}
+                    //labelColor={isOn ? "#ef7503" : "black"}
+                    //selectedLabelColor={isOn ? "#ef7503" : "black"}
+                    />
                 </View>
                 <View width={Dimensions.get("window").width} >
                     <Grid >
@@ -208,8 +217,8 @@ const PricesScreen = () => {
                                 showValuesOnTopOfBars={true}
                                 showBarTops={false}
                             />
-                            <Text style={styles.text}>Ylin: {((100 + alv ) / 100 * monthMax * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Avg: {((100 + alv ) / 100 * avgMonth * 0.1).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Ylin: {((100 + alv) / 100 * monthMax * 0.1).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Avg: {((100 + alv) / 100 * avgMonth * 0.1).toFixed(2)} snt/kWh</Text>
                             <Text style={styles.text}>Alin: {((100 + alv) / 100 * monthMin * 0.1).toFixed(2)} snt/kWh</Text>
                         </Col>
                         <Col>
@@ -226,9 +235,9 @@ const PricesScreen = () => {
                                 showValuesOnTopOfBars={true}
                                 showBarTops={false}
                             />
-                            <Text style={styles.text}>Ylin: {((100 + alv ) / 100 * weekMax * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Avg: {((100 + alv ) / 100 * avgLastWeek * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Alin: {((100 + alv ) / 100 * weekMin * 0.1).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Ylin: {((100 + alv) / 100 * weekMax * 0.1).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Avg: {((100 + alv) / 100 * avgLastWeek * 0.1).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Alin: {((100 + alv) / 100 * weekMin * 0.1).toFixed(2)} snt/kWh</Text>
                         </Col>
                         <Col>
                             <Text>Tämä päivä: </Text>
@@ -244,9 +253,9 @@ const PricesScreen = () => {
                                 showValuesOnTopOfBars={true}
                                 showBarTops={false}
                             />
-                            <Text style={styles.text}>Ylin: {((100 + alv ) / 100 * todayMax * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Avg: {((100 + alv ) / 100 * avgToday).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Alin: {((100 + alv ) / 100 * todayMin * 0.1).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Ylin: {((100 + alv) / 100 * todayMax * 0.1).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Avg: {((100 + alv) / 100 * avgToday).toFixed(2)} snt/kWh</Text>
+                            <Text style={styles.text}>Alin: {((100 + alv) / 100 * todayMin * 0.1).toFixed(2)} snt/kWh</Text>
                         </Col>
                     </Grid>
                 </View>
@@ -265,7 +274,7 @@ const PricesScreen = () => {
                             showValuesOnTopOfBars={true}
                             showBarTops={false}
                         />
-                        <Text style={styles.text}>{((100 + alv ) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
+                        <Text style={styles.text}>{((100 + alv) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
                     </Col>
                 </View>
                 <View width={Dimensions.get("window").width}>
@@ -284,6 +293,7 @@ const PricesScreen = () => {
                             //yAxisLabel="€"
                             yAxisSuffix="snt"
                             yAxisInterval={1} // optional, defaults to 1
+                            fromZero={true}
                             chartConfig={{
                                 backgroundColor: "#000000",
                                 backgroundGradientFrom: "#fb8c00",
@@ -326,6 +336,7 @@ const PricesScreen = () => {
                             //yAxisLabel="€"
                             yAxisSuffix="snt"
                             yAxisInterval={1} // optional, defaults to 1
+                            fromZero={true}
                             chartConfig={{
                                 backgroundColor: "#000000",
                                 backgroundGradientFrom: "#fb8c00",
