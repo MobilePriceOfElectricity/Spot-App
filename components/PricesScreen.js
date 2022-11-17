@@ -62,7 +62,7 @@ const PricesScreen = () => {
 
     // Alv arvot
     const alvData = [
-        { label: 'Alv 24%', value: 24 },
+        { label: 'Alv 24%', value: 24},
         { label: 'Alv 10%', value: 10 },
         { label: 'Alv 0%', value: 1 }];
 
@@ -169,10 +169,10 @@ const PricesScreen = () => {
 
     // Charttien kokoonpano
     const chartConfig = {
-        backgroundGradientFrom: "#1E2923",
-        backgroundGradientFromOpacity: 0,
-        backgroundGradientTo: "#08130D",
-        backgroundGradientToOpacity: 0.5,
+        backgroundGradientFrom: "#a6d3d8",
+        backgroundGradientFromOpacity: 1,
+        backgroundGradientTo: "#a6d3d8",
+        backgroundGradientToOpacity: 1,
         color: (opacity = 1) => `rgba(16, 16, 16, ${opacity})`,
         strokeWidth: 2, // optional, default 3
         barPercentage: 0.5,
@@ -180,7 +180,7 @@ const PricesScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.home}>
             <ScrollView>
                 <View>
                     <RadioForm
@@ -189,16 +189,17 @@ const PricesScreen = () => {
                         radio_props={alvData}
                         initial={0}
                         onPress={(value) => { setAlv(value) }}
-                        buttonColor={'#ef7503'}
+                        buttonColor={'#a6d3d8'}
                         selectedButtonColor={'#b64600'}
-                    //labelColor={isOn ? "#ef7503" : "black"}
-                    //selectedLabelColor={isOn ? "#ef7503" : "black"}
+                        labelColor={'#a6d3d8'}
+                        selectedLabelColor={'#a6d3d8'}
+                        
                     />
                 </View>
                 <View width={Dimensions.get("window").width} >
                     <Grid >
                         <Col>
-                            <Text>Edelliset 31 vrk:</Text>
+                            <Text style={styles.text}>Edelliset 31 vrk:</Text>
                             <BarChart
                                 //style={graphStyle}
                                 data={dataMonth}
@@ -218,7 +219,7 @@ const PricesScreen = () => {
                             <Text style={styles.text}>Alin: {((100 + alv) / 100 * monthMin * 0.1).toFixed(2)} snt/kWh</Text>
                         </Col>
                         <Col>
-                            <Text>Edelliset 7 vrk:</Text>
+                            <Text style={styles.text}>Edelliset 7 vrk:</Text>
                             <BarChart
                                 //style={graphStyle}
                                 data={dataWeek}
@@ -236,7 +237,7 @@ const PricesScreen = () => {
                             <Text style={styles.text}>Alin: {((100 + alv) / 100 * weekMin * 0.1).toFixed(2)} snt/kWh</Text>
                         </Col>
                         <Col>
-                            <Text>Tämä päivä: </Text>
+                            <Text style={styles.text}>Tämä päivä: </Text>
                             <BarChart
                                 //style={graphStyle}
                                 data={dataDay}
@@ -257,11 +258,11 @@ const PricesScreen = () => {
                 </View>
                 <View width={Dimensions.get("window").width}>
                     <Col style={{ alignItems: 'center' }}>
-                        <Text>Hinta nyt</Text>
+                        <Text style={styles.text}>Hinta nyt</Text>
                         <BarChart
                             //style={graphStyle}
                             data={dataNow}
-                            width={350}
+                            width={300}
                             height={300}
                             yAxisSuffix=" snt"
                             chartConfig={chartConfig}
@@ -275,7 +276,7 @@ const PricesScreen = () => {
                 </View>
                 <View width={Dimensions.get("window").width}>
                     <Col>
-                        <Text>Hinta tänään</Text>
+                        <Text style={styles.text}>Hinta tänään</Text>
                         <LineChart
                             data={{
                                 labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
@@ -316,7 +317,7 @@ const PricesScreen = () => {
                 </View>
                 <View width={Dimensions.get("window").width}>
                     <Col>
-                        <Text>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
+                        <Text style={styles.text}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
                         <LineChart
                             data={{
                                 labels: ["01:00", "03:00", "05:00", "07:00", "10:00",

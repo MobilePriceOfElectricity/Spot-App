@@ -3,7 +3,7 @@ import styles from '../styles/styles';
 
 const SettingsScreen = () => {
     return (
-        <View style={styles.xix}>
+        <View style={styles.home}>
 
 
         </View>

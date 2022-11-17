@@ -3,7 +3,7 @@ import styles from '../styles/styles';
 
 const ContactScreen = () => {
     return(
-        <View style={styles.xx}>
+        <View style={styles.home}>
             
         </View>
     );
