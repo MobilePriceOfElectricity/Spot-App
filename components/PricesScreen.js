@@ -83,13 +83,9 @@ const PricesScreen = () => {
 
     // Tämän hetkinen hinta
     const period = allData.map(period => period.children);
-    console.log(period)
-    let point = ''
-    if (hour < '14') {
-        point = period[32].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
-    } else {
-        point = period[31].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
-    }
+
+    let point = period[32].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
+
 
     let newData = []
     for (let i = 2; i < point.length; i++) {
