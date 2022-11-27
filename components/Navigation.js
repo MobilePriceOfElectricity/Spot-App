@@ -33,13 +33,13 @@ export default function DrawerNavigation(){
         <NavigationContainer>
         <Drawer.Navigator screenOptions={{
           headerTintColor: '#a6d3d8',
-          fontFamily: 'Montserratregular',
+          fontFamily: 'MontserratRegular',
           headerShown: true,
           headerTitleStyle: { color: '#a6d3d8', fontSize: 22, fontFamily: "MontserratRegular"},
 
           drawerLabelStyle: {
             marginLeft: -15,
-            fontFamily: "Montserratregular"
+            fontFamily: "MontserratRegular"
           },
           
           headerStyle: { 
@@ -94,4 +94,3 @@ export default function DrawerNavigation(){
         </NavigationContainer>
     );
 }
-

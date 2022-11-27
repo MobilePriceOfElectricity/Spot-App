@@ -1,4 +1,5 @@
-import { Text, View, Dimensions, ScrollView } from 'react-native';
+import 'react-native-gesture-handler';
+import { Animated, Text, View, Dimensions, ScrollView, useWindowDimensions } from 'react-native';
 import { useState, useEffect } from 'react';
 import {
     LineChart,
@@ -10,8 +11,17 @@ import {
 } from "react-native-chart-kit";
 import { Col, Grid } from 'react-native-easy-grid'
 import moment from 'moment';
-import RadioForm from 'react-native-simple-radio-button';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import styles from '../styles/styles';
+import { useFonts } from 'expo-font';
+import { useRef } from 'react';
+import DropDownPicker from 'react-native-dropdown-picker'
+
+
+
+
+
+
 
 const URL = 'https://web-api.tp.entsoe.eu/api?'
 const TOKEN = 'securityToken=419b446b-122c-414f-8586-fc7d6ff39def'
@@ -25,6 +35,14 @@ const PricesScreen = () => {
     const [hour, setHour] = useState();
     const [allData, setAllData] = useState();
     const [alv, setAlv] = useState(24);
+    //dropdown
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const [items, setItems] = useState([
+        { label: 'Tämä päivä', value: 'Today' },
+        { label: 'Edelliset 7 vrk', value: 'LastSeven' },
+        { label: 'Edelliset 31 vrk', value: 'LastMonth' },
+    ]);
 
     useEffect(() => {
         //let interval = setInterval(() => {
@@ -69,16 +87,12 @@ const PricesScreen = () => {
 
     // Hakee ajan mukaan dataa eri kohdasta
     let today = '';
-    if (hour < '14' && hour > '00') {
-        today = answer.slice(-24).map(val => ((100 + alv) / 100 * val.value * 0.1));
-    } else {
-        today = answer.slice(-48, -24).map(val => ((100 + alv) / 100 * val.value * 0.1));
-    // Hakee ennusteen ajan mukaan
-    }
     let tomorrow = ''
     if (hour < '14') {
+        today = answer.slice(-24).map(val => ((100 + alv) / 100 * val.value * 0.1));
         tomorrow = new Array(24).fill(0);
     } else {
+        today = answer.slice(-48, -24).map(val => ((100 + alv) / 100 * val.value * 0.1));
         tomorrow = answer.slice(-24).map(val => ((100 + alv) / 100 * val.value * 0.1));
     }
 
@@ -87,16 +101,8 @@ const PricesScreen = () => {
 
     // Tämän hetkinen hinta
     const period = allData.map(period => period.children);
-    //console.log(period)
-    
-    let point = ''
-    if (hour > '14' && hour < '22') {
-        point = period[32].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
-    } else {
-        point = period[31].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
-    }
-    
-    //console.log(point)
+    let point = period[32].map((point) => point.children.map(({ name, value }) => ({ [name]: value })))
+
 
     let newData = []
     for (let i = 2; i < point.length; i++) {
@@ -109,8 +115,6 @@ const PricesScreen = () => {
     let sum = ''
     for (let i = 0; i < newData.length; i++)
         if (hour === newData[i].time) {
-            sum = newData[i].price
-        } else if (hour === '00') {
             sum = newData[i].price
         }
 
@@ -137,68 +141,55 @@ const PricesScreen = () => {
 
     // Datat charteille
 
-    // Päivän alin/avg/ylin...
-    const dataDay = {
-        labels: ["Alin", "Avg", "Ylin"],
-        datasets: [
-            {
-                data: [((100 + alv) / 100 * todayMin * 0.1).toFixed(2),
-                ((100 + alv) / 100 * avgToday).toFixed(2),
-                ((100 + alv) / 100 * todayMax * 0.1).toFixed(2)]
-            },
-        ]
-    };
+    // Päivän/viikon/kk alin/avg/ylin...
+   let dataDay = ''
+   if (value === 'Today' || value === null) {
+       dataDay = {
+           labels: ["ALIN","AVG", "YLIN"], 
+           datasets: [{data: [((100 + alv) / 100 * todayMin * 0.1).toFixed(2),
+                   ((100 + alv) / 100 * avgToday).toFixed(2),
+                   ((100 + alv) / 100 * todayMax * 0.1).toFixed(2)]}]}}
+   if (value === 'LastSeven') {
+       dataDay = {
+           labels: ["ALIN","AVG", "YLIN"], 
+           datasets: [{data: [((100 + alv) / 100 * weekMin * 0.1).toFixed(2),
+               ((100 + alv) / 100 * avgLastWeek * 0.1).toFixed(2),
+               ((100 + alv) / 100 * weekMax * 0.1).toFixed(2)]}]}}
+   if (value === 'LastMonth') {
+       dataDay = {
+           labels: ["ALIN","AVG", "YLIN"], 
+           datasets: [{data: [((100 + alv) / 100 * monthMin * 0.1).toFixed(2),
+                   ((100 + alv) / 100 * avgMonth * 0.1).toFixed(2),
+                   ((100 + alv) / 100 * monthMax * 0.1).toFixed(2)]}]}}
 
-    // Viikon alin/avg/ylin...
-    const dataWeek = {
-        labels: ["Alin", "Avg", "Ylin"],
-        datasets: [
-            {
-                data: [((100 + alv) / 100 * weekMin * 0.1).toFixed(2),
-                ((100 + alv) / 100 * avgLastWeek * 0.1).toFixed(2),
-                ((100 + alv) / 100 * weekMax * 0.1).toFixed(2)]
-            }
-        ]
-    };
-    // Tämä hetki...
-    const dataNow = {
-        labels: ["Hinta nyt"], // optional
-        datasets: [
-            { data: [((100 + alv) / 100 * sum * 0.1).toFixed(2)] }
-        ]
-    };
-
-    // 31 päivän alin/avg/ylin...
-    const dataMonth = {
-        labels: ["Alin", "Avg", "Ylin"],
-        datasets: [
-            {
-                data: [((100 + alv) / 100 * monthMin * 0.1).toFixed(2),
-                ((100 + alv) / 100 * avgMonth * 0.1).toFixed(2),
-                ((100 + alv) / 100 * monthMax * 0.1).toFixed(2)]
-            }
-        ]
-    };
-
+   
+  
     // Charttien kokoonpano
     const chartConfig = {
-        backgroundGradientFrom: "#a6d3d8",
-        backgroundGradientFromOpacity: 1,
-        backgroundGradientTo: "#a6d3d8",
+        backgroundGradientFrom: "#1f2131",
+        backgroundGradientFromOpacity: 2,
+        backgroundGradientTo: "#1f2131",
         backgroundGradientToOpacity: 1,
-        color: (opacity = 1) => `rgba(16, 16, 16, ${opacity})`,
+        color: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
         strokeWidth: 2, // optional, default 3
         barPercentage: 0.5,
-        useShadowColorFromDataset: false // optional
+        useShadowColorFromDataset: false, // optional 
+        
     };
 
+    
+
     return (
-        <View style={styles.home}>
-            <ScrollView>
-                <View>
+        <View style={[styles.home]} >
+            
+           
+                
+              
+                <View style={[{marginBottom: 20, marginTop: 20}]}>
                     <RadioForm
                         //style={theme.radio}
                         buttonSize={10}
+                        buttonOuterSize={20}
                         radio_props={alvData}
                         initial={0}
                         onPress={(value) => { setAlv(value) }}
@@ -206,90 +197,86 @@ const PricesScreen = () => {
                         selectedButtonColor={'#b64600'}
                         labelColor={'#a6d3d8'}
                         selectedLabelColor={'#a6d3d8'}
+                        formHorizontal={true}
+                        labelHorizontal={false}
                         
                     />
+                </View> 
+                <View>
+                    <DropDownPicker
+                        
+                        theme="DARK"
+                        placeholder='Tämä päivä'
+                        open={open}
+                        value={value}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setValue}
+                        setItems={setItems}
+                        //defaultIndex={0}
+                        containerStyle={{ height: 30 }}
+                        onChangeItem={item => setValue(item.value)}
+                    />
                 </View>
+            <ScrollView>
                 <View width={Dimensions.get("window").width} >
                     <Grid >
-                        <Col>
-                            <Text style={styles.text}>Edelliset 31 vrk:</Text>
+                        <Col style={{ alignItems: 'center', marginTop: 75}}>
                             <BarChart
-                                //style={graphStyle}
-                                data={dataMonth}
-                                width={120}
-                                height={100}
-                                //maxValue={100}
-                                yAxisSuffix=" snt"
-                                chartConfig={chartConfig}
-                                verticalLabelRotation={30}
-                                //fromNumber={100}
-                                fromZero={true}
-                                showValuesOnTopOfBars={true}
-                                showBarTops={false}
-                            />
-                            <Text style={styles.text}>Ylin: {((100 + alv) / 100 * monthMax * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Avg: {((100 + alv) / 100 * avgMonth * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Alin: {((100 + alv) / 100 * monthMin * 0.1).toFixed(2)} snt/kWh</Text>
-                        </Col>
-                        <Col>
-                            <Text style={styles.text}>Edelliset 7 vrk:</Text>
-                            <BarChart
-                                //style={graphStyle}
-                                data={dataWeek}
-                                width={120}
-                                height={100}
-                                yAxisSuffix=" snt"
-                                chartConfig={chartConfig}
-                                verticalLabelRotation={30}
-                                fromZero={true}
-                                showValuesOnTopOfBars={true}
-                                showBarTops={false}
-                            />
-                            <Text style={styles.text}>Ylin: {((100 + alv) / 100 * weekMax * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Avg: {((100 + alv) / 100 * avgLastWeek * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Alin: {((100 + alv) / 100 * weekMin * 0.1).toFixed(2)} snt/kWh</Text>
-                        </Col>
-                        <Col>
-                            <Text style={styles.text}>Tämä päivä: </Text>
-                            <BarChart
-                                //style={graphStyle}
-                                data={dataDay}
-                                width={120}
-                                height={100}
-                                yAxisSuffix=" snt"
-                                chartConfig={chartConfig}
-                                verticalLabelRotation={30}
-                                fromZero={true}
-                                showValuesOnTopOfBars={true}
-                                showBarTops={false}
-                            />
-                            <Text style={styles.text}>Ylin: {((100 + alv) / 100 * todayMax * 0.1).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Avg: {((100 + alv) / 100 * avgToday).toFixed(2)} snt/kWh</Text>
-                            <Text style={styles.text}>Alin: {((100 + alv) / 100 * todayMin * 0.1).toFixed(2)} snt/kWh</Text>
-                        </Col>
-                    </Grid>
-                </View>
-                <View width={Dimensions.get("window").width}>
-                    <Col style={{ alignItems: 'center' }}>
-                        <Text style={styles.text}>Hinta nyt</Text>
-                        <BarChart
                             //style={graphStyle}
-                            data={dataNow}
+                            data={dataDay}
                             width={300}
-                            height={300}
+                            height={250}
                             yAxisSuffix=" snt"
                             chartConfig={chartConfig}
                             verticalLabelRotation={30}
                             fromZero={true}
                             showValuesOnTopOfBars={true}
                             showBarTops={false}
+
+                            bezier
+                            style={{
+                                marginVertical: 8,
+                                borderRadius: 5,
+                                shadowColor: "#a6d3d8",
+                                elevation: 5,
+                                
+                            }}
+                            
                         />
-                        <Text style={styles.text}>{((100 + alv) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
+                        
+                        </Col>
+                    </Grid>
+                </View>
+
+                
+                <View style={styles.home} width={Dimensions.get("window").width}>
+                    <Col style={{ alignItems: 'center', marginTop: 50, marginBottom: 30 }}>
+                        <Text style={[styles.text,{marginBottom: 20, fontSize: 20}]}>Hinta nyt</Text>
+                        <View style={{
+                                        width: 150,
+                                        height: 150,
+                                        backgroundColor: '#0000',
+                                        borderRadius: 10,
+                                        paddingHorizontal: 40,
+                                        
+                                        
+                                        alignSelf: 'center',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        shadowColor: "#a6d3d8",
+                                        shadowOffset: {width: 0, height: 0},
+                                        shadowOpacity: 0.8,
+                                        elevation: 4
+                                    }}>
+                            <Text style={styles.text}>{((100 + alv) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
+                        </View>
                     </Col>
                 </View>
-                <View width={Dimensions.get("window").width}>
-                    <Col>
-                        <Text style={styles.text}>Hinta tänään</Text>
+                
+                <View >
+                    <Col style={{ alignItems: 'center', marginTop: 30 }}>
+                        <Text style={[styles.text,{margin: 20, fontSize: 16}]}>Hinta tänään</Text>
                         <LineChart
                             data={{
                                 labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
@@ -299,23 +286,24 @@ const PricesScreen = () => {
                                 ]
                             }}
                             width={Dimensions.get("window").width} // from react-native
-                            height={220}
+                            height={175}
                             //yAxisLabel="€"
-                            yAxisSuffix="snt"
+                            yAxisSuffix=" snt"
                             yAxisInterval={1} // optional, defaults to 1
                             fromZero={true}
                             chartConfig={{
-                                backgroundColor: "#000000",
-                                backgroundGradientFrom: "#fb8c00",
-                                backgroundGradientTo: "#ffa726",
+                                
+                                backgroundColor: "#0000",
+                                backgroundGradientFrom: "#1f2131",
+                                backgroundGradientTo: "#1f2131",
                                 decimalPlaces: 2, // optional, defaults to 2dp
                                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
                                 style: {
-                                    borderRadius: 16
+                                    borderRadius: 16,
                                 },
                                 propsForDots: {
-                                    r: "5",
+                                    r: "1",
                                     strokeWidth: "1",
                                     stroke: "#ffa726"
                                 }
@@ -323,14 +311,17 @@ const PricesScreen = () => {
                             bezier
                             style={{
                                 marginVertical: 8,
-                                borderRadius: 16
+                                borderRadius: 16,
+                                shadowColor: "#a6d3d8",
+                                elevation: 10,
+                                
                             }}
                         />
                     </Col>
                 </View>
                 <View width={Dimensions.get("window").width}>
-                    <Col>
-                        <Text style={styles.text}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
+                    <Col style={{ alignItems: 'center', marginTop: 30 }} >
+                        <Text style={[styles.text,{marginBottom: 20, fontSize: 16}]}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
                         <LineChart
                             data={{
                                 labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
@@ -342,23 +333,23 @@ const PricesScreen = () => {
                                 ]
                             }}
                             width={Dimensions.get("window").width} // from react-native
-                            height={220}
+                            height={175}
                             //yAxisLabel="€"
-                            yAxisSuffix="snt"
+                            yAxisSuffix=" snt"
                             yAxisInterval={1} // optional, defaults to 1
                             fromZero={true}
                             chartConfig={{
-                                backgroundColor: "#000000",
-                                backgroundGradientFrom: "#fb8c00",
-                                backgroundGradientTo: "#ffa726",
+                                backgroundColor: "#0000",
+                                backgroundGradientFrom: "#1f2131",
+                                backgroundGradientTo: "#1f2131",
                                 decimalPlaces: 2, // optional, defaults to 2dp
                                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
                                 style: {
                                     borderRadius: 16
                                 },
                                 propsForDots: {
-                                    r: "5",
+                                    r: "1",
                                     strokeWidth: "1",
                                     stroke: "#ffa726"
                                 }
@@ -366,7 +357,10 @@ const PricesScreen = () => {
                             bezier
                             style={{
                                 marginVertical: 8,
-                                borderRadius: 16
+                                borderRadius: 16,
+                                shadowColor: "#a6d3d8",
+                                elevation: 10
+                                
                             }}
                         />
                     </Col>
