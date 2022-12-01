@@ -10,8 +10,9 @@ import { ContactScreen } from './ContactScreen';
 import { HomeScreen } from './HomeScreen';
 import {SettingsScreen} from './SettingsScreen';
 import { useFonts } from 'expo-font';
-
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import CustomDrawer from '../components/CustomDrawer';
+import { createDrawerNavigator, DrawerContent } from '@react-navigation/drawer';
+import { ImageBackground, View } from 'react-native';
 
 const Drawer = createDrawerNavigator();
 
@@ -30,12 +31,14 @@ export default function DrawerNavigation(){
   }
 
     return (
-        <NavigationContainer>
-        <Drawer.Navigator screenOptions={{
+      
+        <NavigationContainer>  
+        <Drawer.Navigator drawerContent={props => <CustomDrawer {...props} />} 
+        screenOptions={{
           headerTintColor: '#a6d3d8',
           fontFamily: 'MontserratRegular',
           headerShown: true,
-          headerTitleStyle: { color: '#a6d3d8', fontSize: 22, fontFamily: "MontserratRegular"},
+          headerTitleStyle: { color: '#a6d3d8', fontSize: 25, fontFamily: "MontserratRegular"},
 
           drawerLabelStyle: {
             marginLeft: -15,
@@ -44,16 +47,17 @@ export default function DrawerNavigation(){
           
           headerStyle: { 
             backgroundColor: '#1f2131',
-            borderBottomColor: 'orange',
+            borderBottomColor: '#D4850E',
             borderBottomWidth: 3,
             },
             
-            drawerActiveTintColor:"orange",
+            drawerActiveTintColor:"#D4850E",
             drawerInactiveTintColor:"#a6d3d8",
             drawerStyle: {
             backgroundColor: '#1f2131',
           },
         }}>
+        
         <Drawer.Screen  
           name="Koti"
           component= {HomeScreen} 

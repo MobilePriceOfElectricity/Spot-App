@@ -20,12 +20,15 @@ import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from "expo-notifications";
 
+
 const URL = 'https://web-api.tp.entsoe.eu/api?'
 const TOKEN = 'securityToken=419b446b-122c-414f-8586-fc7d6ff39def'
 const DOCTYPE = '&documentType=A44'
 const OUT_BIDD_ZONE = '&outBiddingZone_Domain=10YFI-1--------U'
 const IN_DOM = '&in_Domain=10YFI-1--------U'
 const OUT_DOM = '&out_Domain=10YFI-1--------U'
+
+
 
 // BackGroundtask
 let setStateFn = () => {
@@ -266,192 +269,206 @@ const PricesScreen = () => {
 
     console.log(((100 + alv) / 100 * sum * 0.1).toFixed(2))
     return (
-        <View style={[styles.home]} >
+        <View style={styles.container}>
+            <View style={[styles.home]} >
 
 
 
 
-            <View style={[{ marginBottom: 20, marginTop: 20 }]}>
-                <RadioForm
-                    //style={theme.radio}
-                    buttonSize={10}
-                    buttonOuterSize={20}
-                    radio_props={alvData}
-                    initial={0}
-                    onPress={(value) => { setAlv(value) }}
-                    buttonColor={'#a6d3d8'}
-                    selectedButtonColor={'#b64600'}
-                    labelColor={'#a6d3d8'}
-                    selectedLabelColor={'#a6d3d8'}
-                    formHorizontal={true}
-                    labelHorizontal={false}
+                <View style={[{ marginBottom: 20, marginTop: 20 }]}>
+                    <RadioForm
+                        //style={theme.radio}
+                        buttonSize={10}
+                        buttonOuterSize={20}
+                        radio_props={alvData}
+                        initial={0}
+                        onPress={(value) => { setAlv(value) }}
+                        buttonColor={'#D4850E'}
+                        selectedButtonColor={'#D4850E'}
+                        labelColor={'#a6d3d8'}
+                        selectedLabelColor={'#a6d3d8'}
+                        formHorizontal={true}
+                        labelHorizontal={false}
 
-                />
-            </View>
-            <View>
-                <DropDownPicker
+                    />
+                </View>
+                <View>
+                    <DropDownPicker
 
-                    theme="DARK"
-                    placeholder='Tämä päivä'
-                    open={open}
-                    value={value}
-                    items={items}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    setItems={setItems}
-                    //defaultIndex={0}
-                    containerStyle={{ height: 30 }}
-                    onChangeItem={item => setValue(item.value)}
-                />
-            </View>
-            <ScrollView>
-                <View width={Dimensions.get("window").width} >
-                    <Grid >
-                        <Col style={{ alignItems: 'center', marginTop: 75 }}>
-                            <BarChart
-                                //style={graphStyle}
-                                data={dataDay}
-                                width={300}
-                                height={250}
+                        theme="DARK"
+                        placeholder='Tämä päivä'
+                        open={open}
+                        value={value}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setValue}
+                        setItems={setItems}
+                        //defaultIndex={0}
+                        containerStyle={{ height: 30 }}
+                        onChangeItem={item => setValue(item.value)}
+                    />
+                </View>
+                <ScrollView>
+                    <View width={Dimensions.get("screen").width} >
+                        <Grid >
+                            <Col style={{ alignItems: 'center', marginTop: 75 }}>
+                                <BarChart
+                                    //style={graphStyle}
+                                    data={dataDay}
+                                    width={300}
+                                    height={250}
+                                    yAxisSuffix=" snt"
+                                    chartConfig={chartConfig}
+                                    verticalLabelRotation={16}
+                                    fromZero={true}
+                                    showValuesOnTopOfBars={true}
+                                    showBarTops={false}
+
+                                    bezier
+                                    style={{
+                                        marginVertical: 8,
+                                        borderRadius: 5,
+                                        shadowColor: "#a6d3d8",
+                                        elevation: 5,
+
+                                    }}
+
+                                />
+
+                            </Col>
+                        </Grid>
+                    </View>
+
+
+                    <View style={styles.home}>
+                        <Col style={{ alignItems: 'center', marginTop: 50, marginBottom: 30 }}>
+                            <Text style={[styles.text, { marginBottom: 20, fontSize: 20 }]}>Hinta nyt</Text>
+                            <View style={{
+                                width: 150,
+                                height: 150,
+                                backgroundColor: '#0000',
+                                borderRadius: 10,
+                                paddingHorizontal: 40,
+
+
+                                alignSelf: 'center',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                shadowColor: "#a6d3d8",
+                                shadowOffset: { width: 0, height: 0 },
+                                shadowOpacity: 0.8,
+                                elevation: 4
+                            }}>
+                                <Text style={styles.text}>{((100 + alv) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
+                            </View>
+                        </Col>
+                    </View>
+
+                    <View style={{  marginTop: 30}}>
+                            <Text style={[styles.text, {textAlign: 'center', margin: 20, fontSize: 16 }]}>Hinta tänään</Text>
+                            <View style={styles.runkkarit}>
+                                <LineChart
+                                        data={{
+                                            labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
+                                                "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
+                                            datasets: [
+                                                { data: today }
+                                            ]
+                                        }}
+                                        width={Dimensions.get("window").width} // from react-native
+                                        height={200}
+                                        //yAxisLabel="€"
+                                        yAxisSuffix="snt"
+                                        yAxisInterval={1} // optional, defaults to 1
+                                        fromZero={true}
+                                        verticalLabelRotation={-40}
+                                        
+                                        chartConfig={{
+                                            
+                                            backgroundColor: "#0000",
+                                            backgroundGradientFrom: "#1f2131",
+                                            backgroundGradientTo: "#1f2131",
+                                            decimalPlaces: 2, // optional, defaults to 2dp
+                                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                            labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
+                                            style: {
+                                                borderRadius: 16
+                                                
+                                            },
+                                            propsForDots: {
+                                                r: "2",
+                                                strokeWidth: "1",
+                                                stroke: "#ffa726"
+                                            },
+                                            propsForLabels: {
+                                                fontSize: 10,
+                                                
+                                            },
+                                        }}
+                                        bezier
+                                        style={{
+                                            marginVertical: 8,
+                                            borderRadius: 16,
+                                            
+                                            
+                                            
+                                            
+                                        }}
+                                />
+                            </View>
+                        
+                    </View>
+                    <View style={{ marginTop: 30 }}>
+                         
+                            <Text style={[styles.text, { marginBottom: 20, fontSize: 16 }]}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
+                            <LineChart
+                                data={{
+                                    labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
+                                        "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
+                                    datasets: [
+                                        {
+                                            data: tomorrow
+                                        }
+                                    ]
+                                }}
+                                width={Dimensions.get("window").width} // from react-native
+                                height={200}
+                                //yAxisLabel="€"
                                 yAxisSuffix=" snt"
-                                chartConfig={chartConfig}
-                                verticalLabelRotation={30}
+                                yAxisInterval={1} // optional, defaults to 1
                                 fromZero={true}
-                                showValuesOnTopOfBars={true}
-                                showBarTops={false}
-
+                                verticalLabelRotation={-40}
+                                chartConfig={{
+                                    backgroundColor: "#0000",
+                                    backgroundGradientFrom: "#1f2131",
+                                    backgroundGradientTo: "#1f2131",
+                                    decimalPlaces: 2, // optional, defaults to 2dp
+                                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                    labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
+                                    style: {
+                                        borderRadius: 16
+                                    },
+                                    propsForDots: {
+                                        r: "2",
+                                        strokeWidth: "1",
+                                        stroke: "#ffa726"
+                                    },
+                                    propsForLabels: {
+                                        fontSize: 10,
+                                        
+                                    },
+                                }}
                                 bezier
                                 style={{
                                     marginVertical: 8,
-                                    borderRadius: 5,
-                                    shadowColor: "#a6d3d8",
-                                    elevation: 5,
-
-                                }}
-
-                            />
-
-                        </Col>
-                    </Grid>
-                </View>
-
-
-                <View style={styles.home} width={Dimensions.get("window").width}>
-                    <Col style={{ alignItems: 'center', marginTop: 50, marginBottom: 30 }}>
-                        <Text style={[styles.text, { marginBottom: 20, fontSize: 20 }]}>Hinta nyt</Text>
-                        <View style={{
-                            width: 150,
-                            height: 150,
-                            backgroundColor: '#0000',
-                            borderRadius: 10,
-                            paddingHorizontal: 40,
-
-
-                            alignSelf: 'center',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            shadowColor: "#a6d3d8",
-                            shadowOffset: { width: 0, height: 0 },
-                            shadowOpacity: 0.8,
-                            elevation: 4
-                        }}>
-                            <Text style={styles.text}>{((100 + alv) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
-                        </View>
-                    </Col>
-                </View>
-
-                <View >
-                    <Col style={{ alignItems: 'center', marginTop: 30 }}>
-                        <Text style={[styles.text, { margin: 20, fontSize: 16 }]}>Hinta tänään</Text>
-                        <LineChart
-                            data={{
-                                labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
-                                    "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
-                                datasets: [
-                                    { data: today }
-                                ]
-                            }}
-                            width={Dimensions.get("window").width} // from react-native
-                            height={175}
-                            //yAxisLabel="€"
-                            yAxisSuffix=" snt"
-                            yAxisInterval={1} // optional, defaults to 1
-                            fromZero={true}
-                            chartConfig={{
-
-                                backgroundColor: "#0000",
-                                backgroundGradientFrom: "#1f2131",
-                                backgroundGradientTo: "#1f2131",
-                                decimalPlaces: 2, // optional, defaults to 2dp
-                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
-                                style: {
                                     borderRadius: 16,
-                                },
-                                propsForDots: {
-                                    r: "1",
-                                    strokeWidth: "1",
-                                    stroke: "#ffa726"
-                                }
-                            }}
-                            bezier
-                            style={{
-                                marginVertical: 8,
-                                borderRadius: 16,
-                                shadowColor: "#a6d3d8",
-                                elevation: 10,
-
-                            }}
-                        />
-                    </Col>
-                </View>
-                <View width={Dimensions.get("window").width}>
-                    <Col style={{ alignItems: 'center', marginTop: 30 }} >
-                        <Text style={[styles.text, { marginBottom: 20, fontSize: 16 }]}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
-                        <LineChart
-                            data={{
-                                labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
-                                    "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
-                                datasets: [
-                                    {
-                                        data: tomorrow
-                                    }
-                                ]
-                            }}
-                            width={Dimensions.get("window").width} // from react-native
-                            height={175}
-                            //yAxisLabel="€"
-                            yAxisSuffix=" snt"
-                            yAxisInterval={1} // optional, defaults to 1
-                            fromZero={true}
-                            chartConfig={{
-                                backgroundColor: "#0000",
-                                backgroundGradientFrom: "#1f2131",
-                                backgroundGradientTo: "#1f2131",
-                                decimalPlaces: 2, // optional, defaults to 2dp
-                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
-                                style: {
-                                    borderRadius: 16
-                                },
-                                propsForDots: {
-                                    r: "1",
-                                    strokeWidth: "1",
-                                    stroke: "#ffa726"
-                                }
-                            }}
-                            bezier
-                            style={{
-                                marginVertical: 8,
-                                borderRadius: 16,
-                                shadowColor: "#a6d3d8",
-                                elevation: 10
-
-                            }}
-                        />
-                    </Col>
-                </View>
-            </ScrollView>
+                                }}
+                                
+                            />
+                        
+                    </View>
+                </ScrollView>
+            </View>
         </View>
     );
 }
