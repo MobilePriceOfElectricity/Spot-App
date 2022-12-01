@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import {AntDesign} from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; 
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons'; 
 import { PricesScreen} from './PricesScreen';
@@ -89,16 +90,16 @@ export default function DrawerNavigation(){
         options={{drawerIcon: () => <MaterialCommunityIcons name="email" size={23} color='#a6d3d8'/>}} 
         />
         <Drawer.Screen 
+          name="Piirakka" 
+          component={DataScreen}
+          options={{drawerIcon: () => <Ionicons name="nuclear" size={24} color="#a6d3d8" />}} 
+        />
+        <Drawer.Screen 
         name ="Asetukset" 
         component={SettingsScreen}
         options={{drawerIcon: () => <AntDesign name="setting" size={23} color='#a6d3d8'/>}} 
         />
-        <Drawer.Screen 
-          name="Piirakka" 
-          component={DataScreen}
-          options={{drawerIcon: () => <AntDesign name="linechart" size={23} color="a6d3d8" />}} 
-        />
-
+        
       </Drawer.Navigator>
         </NavigationContainer>
     );

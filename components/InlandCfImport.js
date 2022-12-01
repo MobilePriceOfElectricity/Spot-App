@@ -28,14 +28,14 @@ export function InlandCfImport() {
       population: 0,
       color: "rgba(131, 167, 234, 1)",
       legendFontColor: "#7F7F7F",
-      legendFontSize: 15
+      legendFontSize: 10
     },
     {
       name: "% Ulkomailta tuotava määrä",
       population: 0,
       color: "#F00",
       legendFontColor: "#7F7F7F",
-      legendFontSize: 15
+      legendFontSize: 10
     },
   ]);
 
@@ -72,7 +72,7 @@ export function InlandCfImport() {
         <View>
           <PieChart
             data={data}
-            width={800}
+            width={300}
             height={200}
             chartConfig={chartConfig}
             accessor={"population"}

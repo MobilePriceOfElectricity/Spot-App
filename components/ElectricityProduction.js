@@ -4,6 +4,7 @@ import {
     PieChart,
   } from "react-native-chart-kit";
 import {LoadingIcon} from "./LoadingIcon";
+import styles from "../styles/styles";
 
   export function ElectricityProduction() {
 
@@ -30,35 +31,35 @@ import {LoadingIcon} from "./LoadingIcon";
       population: 0,
       color: "green",
       legendFontColor: "#7F7F7F",
-      legendFontSize: 15
+      legendFontSize: 10
     },
     {
       name: "% Vesivoima",
       population: 0,
       color: "red",
       legendFontColor: "#7F7F7F",
-      legendFontSize: 15
+      legendFontSize: 10
     },
     {
       name: "% Ydinvoima",
       population: 0,
       color: "blue",
       legendFontColor: "#7F7F7F",
-      legendFontSize: 15
+      legendFontSize: 10
     },
     {
       name: "% Teollisuuden",
       population: 0,
-      color: "Black",
+      color: "#000",
       legendFontColor: "#7F7F7F",
-      legendFontSize: 15
+      legendFontSize: 10
     },
     {
       name: "% Muu",
       population: 0,
-      color: "Grey",
+      color: "#D3D3D3",
       legendFontColor: "#7F7F7F",
-      legendFontSize: 15
+      legendFontSize: 10
     },
     
   ]);
@@ -95,18 +96,19 @@ import {LoadingIcon} from "./LoadingIcon";
   } else {
     return (
       <View>
-        <PieChart
-          data={PieChartData}
-          width={500}
-          height={200}
-          chartConfig={chartConfig}
-          accessor={"population"}
-          backgroundColor={"transparent"}
-          paddingHorizontal={"100"}
-          paddingLeft={20}
-          center={[1, 10]}
-          absolute 
-        />
+          <PieChart
+            data={PieChartData}
+            width={300}
+            height={200}
+            chartConfig={chartConfig}
+            accessor={"population"}
+            backgroundColor={"transparent"}
+            paddingHorizontal={"100"}
+            paddingLeft={20}
+            center={[1, 10]}
+            absolute 
+          />
+        
       </View>
     )
   }

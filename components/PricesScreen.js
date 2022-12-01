@@ -19,6 +19,10 @@ import DropDownPicker from 'react-native-dropdown-picker'
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from "expo-notifications";
+import {
+    responsiveWidth
+  } from "react-native-responsive-dimensions";
+  
 
 
 const URL = 'https://web-api.tp.entsoe.eu/api?'
@@ -27,6 +31,7 @@ const DOCTYPE = '&documentType=A44'
 const OUT_BIDD_ZONE = '&outBiddingZone_Domain=10YFI-1--------U'
 const IN_DOM = '&in_Domain=10YFI-1--------U'
 const OUT_DOM = '&out_Domain=10YFI-1--------U'
+
 
 
 
@@ -269,8 +274,8 @@ const PricesScreen = () => {
 
     console.log(((100 + alv) / 100 * sum * 0.1).toFixed(2))
     return (
-        <View style={styles.container}>
-            <View style={[styles.home]} >
+        <View style={[styles.container]}>
+            <View style={styles.home} >
 
 
 
@@ -306,16 +311,17 @@ const PricesScreen = () => {
                         //defaultIndex={0}
                         containerStyle={{ height: 30 }}
                         onChangeItem={item => setValue(item.value)}
+                        
                     />
                 </View>
                 <ScrollView>
-                    <View width={Dimensions.get("screen").width} >
+                    <View  >
                         <Grid >
                             <Col style={{ alignItems: 'center', marginTop: 75 }}>
                                 <BarChart
                                     //style={graphStyle}
                                     data={dataDay}
-                                    width={300}
+                                    width={responsiveWidth(90)}
                                     height={250}
                                     yAxisSuffix=" snt"
                                     chartConfig={chartConfig}
@@ -323,15 +329,15 @@ const PricesScreen = () => {
                                     fromZero={true}
                                     showValuesOnTopOfBars={true}
                                     showBarTops={false}
-
                                     bezier
                                     style={{
                                         marginVertical: 8,
-                                        borderRadius: 5,
+                                        borderRadius: 16,
                                         shadowColor: "#a6d3d8",
                                         elevation: 5,
 
                                     }}
+                                    
 
                                 />
 
@@ -344,29 +350,27 @@ const PricesScreen = () => {
                         <Col style={{ alignItems: 'center', marginTop: 50, marginBottom: 30 }}>
                             <Text style={[styles.text, { marginBottom: 20, fontSize: 20 }]}>Hinta nyt</Text>
                             <View style={{
-                                width: 150,
-                                height: 150,
-                                backgroundColor: '#0000',
-                                borderRadius: 10,
-                                paddingHorizontal: 40,
-
-
+                                width: 175,
+                                height: 175,
+                                backgroundColor: 'black',
+                                borderRadius: 100,
+                                //paddingHorizontal: 40,
                                 alignSelf: 'center',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                shadowColor: "#a6d3d8",
-                                shadowOffset: { width: 0, height: 0 },
-                                shadowOpacity: 0.8,
-                                elevation: 4
+                                shadowColor: "#00FF00",
+                                //shadowOpacity: 5,
+                                elevation: 10,
+                                shadowRadius: 50
                             }}>
                                 <Text style={styles.text}>{((100 + alv) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
                             </View>
                         </Col>
                     </View>
 
-                    <View style={{  marginTop: 30}}>
+                    <View style={{  marginTop: 30, alignItems: 'center'}}>
                             <Text style={[styles.text, {textAlign: 'center', margin: 20, fontSize: 16 }]}>Hinta tänään</Text>
-                            <View style={styles.runkkarit}>
+                            <View>
                                 <LineChart
                                         data={{
                                             labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
@@ -375,7 +379,7 @@ const PricesScreen = () => {
                                                 { data: today }
                                             ]
                                         }}
-                                        width={Dimensions.get("window").width} // from react-native
+                                        width={responsiveWidth(90)} // from react-native
                                         height={200}
                                         //yAxisLabel="€"
                                         yAxisSuffix="snt"
@@ -418,7 +422,7 @@ const PricesScreen = () => {
                             </View>
                         
                     </View>
-                    <View style={{ marginTop: 30 }}>
+                    <View style={{ marginTop: 30, alignItems: 'center' }}>
                          
                             <Text style={[styles.text, { marginBottom: 20, fontSize: 16 }]}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
                             <LineChart
@@ -431,7 +435,7 @@ const PricesScreen = () => {
                                         }
                                     ]
                                 }}
-                                width={Dimensions.get("window").width} // from react-native
+                                width={responsiveWidth(90)} // from react-native
                                 height={200}
                                 //yAxisLabel="€"
                                 yAxisSuffix=" snt"

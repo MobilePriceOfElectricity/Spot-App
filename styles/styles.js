@@ -5,18 +5,13 @@ export default StyleSheet.create({
       flex: 1,
       backgroundColor: '#16171d',
       
+
     },
     home: {
       flex: 1,
       backgroundColor: '#16171d',
       alignItems: 'center',
-      justifyContent: 'center',
-      
-
-      
-    },
-    runkkarit: {
-      width: '80%'
+      justifyContent: 'center', 
     },
     chartit: {
       paddingVertical: 20,
