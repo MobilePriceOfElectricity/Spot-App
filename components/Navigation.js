@@ -10,7 +10,7 @@ import { ContactScreen } from './ContactScreen';
 import { HomeScreen } from './HomeScreen';
 import {SettingsScreen} from './SettingsScreen';
 import { useFonts } from 'expo-font';
-
+import { DataScreen } from './DataScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const Drawer = createDrawerNavigator();
@@ -88,6 +88,11 @@ export default function DrawerNavigation(){
         name ="Asetukset" 
         component={SettingsScreen}
         options={{drawerIcon: () => <AntDesign name="setting" size={23} color='#a6d3d8'/>}} 
+        />
+        <Drawer.Screen 
+          name="Piirakka" 
+          component={DataScreen}
+          options={{drawerIcon: () => <AntDesign name="linechart" size={23} color="a6d3d8" />}} 
         />
 
       </Drawer.Navigator>
