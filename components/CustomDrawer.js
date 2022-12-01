@@ -38,4 +38,4 @@ const CustomDrawer = props => {
   );
 };
 
-export default CustomDrawer;
+export {CustomDrawer};
