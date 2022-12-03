@@ -12,7 +12,7 @@ export function ProductionCfTemp() {
  const [KeskiKulutusArray, setKeskiKulutus] = useState([])
  const [isLoaded, setIsLoaded] = useState();
 
-  let Year = [
+   let Year = [
     "tammikuu", 
     "helmikuu",
     "maaliskuu",
@@ -27,24 +27,26 @@ export function ProductionCfTemp() {
     "joulukuu"  
   ]
 
-  let HalfYear = [
-    "tammikuu", 
-    "helmikuu",
-    "maaliskuu",
-    "huhtikuu",
-    "toukokuu",
-    "kesäkuu",  
-  ]
-
-  const [timeFrame, setTimeFrame] = useState(Year)
+  const d = new Date();
+  let month = d.getMonth();
+  let currentYear = Year.slice(0, month + 1)
+  const [halfYear, setHalfYear] = useState([]);
+  const [timeFrame, setTimeFrame] = useState(currentYear)
 
   useEffect(() => { 
-   Keskilampotila()
-   KeskiKulutus()
+   GetData()
+   GetHalfYear()
   },[])
 
+  const GetHalfYear = () => {
+    if (month > 6) {
+      setHalfYear(Year.slice(0,6))
+    } else {
+      setHalfYear(Year.slice(0,month))
+    }
+  }
 
-   const Keskilampotila = () => {
+   const GetData = () => {
     fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/FingridData.php', {
       method: 'POST',
       headers : {
@@ -57,29 +59,12 @@ export function ProductionCfTemp() {
     })
     .then((resp) => resp.json())
     .then((res) => {
-      for(let i = 0; i < 12; i++) {
-        KeskilampotilaArray.push(res[1][0]['Keskilampotila'][i])
-      }
-    })
-   } 
-
-
-   const KeskiKulutus = () => {
-    fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/FingridData.php', {
-      method: 'POST',
-      headers : {
-        'Accept' : 'application/json',
-        'Content-type' : 'application/json',
-        'mode' : 'no-cors' 
-      }, body: JSON.stringify({
-        key: 'test',
-      })
-    })
-    .then((resp) => resp.json())
-    .then((res) => {
-      for(let i = 0; i < 12; i++) {
+      for(let i = 0; i < Year.length; i++) {
         KeskiKulutusArray.push(res[2][0]['KeskiKulutus'][i])
       } 
+      for(let i = 0; i < Year.length; i++) {
+        KeskilampotilaArray.push(res[1][0]['Keskilampotila'][i])
+      }
        setIsLoaded(true)
     })
    } 
@@ -90,7 +75,7 @@ export function ProductionCfTemp() {
   return (
         <View>
           <Button title="Kuluva vuosi" onPress={() => setTimeFrame(Year)}></Button>
-          <Button title="Viimeiset kuusi kuukautta" onPress={() => setTimeFrame(HalfYear)}></Button>
+          <Button title="Viimeiset kuusi kuukautta" onPress={() => setTimeFrame(halfYear)}></Button>
           <LineChart
             data={{
               labels: timeFrame,
