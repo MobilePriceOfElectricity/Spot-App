@@ -1,11 +1,15 @@
-import { View,Text } from "react-native";
-import styles from '../styles/styles';
+
+import React from 'react'
+
 
 const AlarmsScreen = () => {
-    return(
-        <View style={styles.home}>
-            
-        </View>
-    );
-}
+
+ 
+  return (
+    <View style={styles.container}>
+
+    </View>
+
+)
+} 
 export {AlarmsScreen}

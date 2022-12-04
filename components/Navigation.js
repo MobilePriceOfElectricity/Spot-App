@@ -74,6 +74,7 @@ export default function DrawerNavigation(){
         component={PriceLimitsScreen}
         options={{drawerIcon: () => <FontAwesome name="sliders" size={23} color='#a6d3d8'/>}} 
         />
+        
         <Drawer.Screen 
         name ="Hälytykset" 
         component={AlarmsScreen}
