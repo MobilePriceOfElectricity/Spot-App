@@ -1,8 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
-import {AntDesign} from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons'; 
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons'; 
+import { FontAwesome,FontAwesome5,MaterialCommunityIcons,AntDesign,Ionicons } from '@expo/vector-icons'; 
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { PricesScreen} from './PricesScreen';
 import { PriceLimitsScreen } from './PriceLimitsScreen';
 import { AlarmsScreen } from './AlarmsScreen';
@@ -10,10 +8,11 @@ import { ElCarScreen } from './ElCarScreen';
 import { ContactScreen } from './ContactScreen';
 import { HomeScreen } from './HomeScreen';
 import {SettingsScreen} from './SettingsScreen';
-import { useFonts } from 'expo-font';
 import { DataScreen } from './DataScreen';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { CustomDrawer } from './CustomDrawer';
+import { OwnInfo } from './OwnInfo';
+import { useFonts } from 'expo-font';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -79,6 +78,11 @@ export default function DrawerNavigation(){
         name ="Hälytykset" 
         component={AlarmsScreen}
         options={{drawerIcon: () => <AntDesign name="notification" size={23} color='#a6d3d8'/>}} 
+        />
+       <Drawer.Screen 
+        name ="Omat kodinkoneet" 
+        component={OwnInfo}
+        options={{drawerIcon: () => <FontAwesome5 name="user" size={23} color='#a6d3d8'/>}} 
         />
         <Drawer.Screen 
         name ="Sähköauto" 

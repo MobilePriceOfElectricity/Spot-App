@@ -4,6 +4,7 @@ import {AntDesign} from "@expo/vector-icons";
 import { TextInput } from 'react-native';
 
 export default function AddScreen({navigation}) {
+
     const [appliance,setAppliance] = useState("");
     const [kwh,setKwh] = useState("0");
 
@@ -31,7 +32,7 @@ export default function AddScreen({navigation}) {
               name="save"
               size={24}
               color="black"
-              onPress={()=> navigation.navigate("Home", {kwh:kwh, appliance:appliance},{checkTextInput} )}
+              onPress={()=> navigation.navigate("Home", {kwh:kwh, appliance:appliance})}
               />
           ),
       })

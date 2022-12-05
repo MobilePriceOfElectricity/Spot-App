@@ -6,12 +6,13 @@ import {Col, Row, Grid  } from "react-native-easy-grid"
 const STORAGE_KEY = "@appliance_Key";
 const STORAGE_KEY2 = "@kwh_Key";
 
-const [appliances,setAppliances] = useState([]);
-const [kwhs,setKwhs] = useState([]);
 
 
+export default function AppliancesScreen({route,navigation}) {  
+    const [appliances,setAppliances] = useState([]);
+    const [kwhs,setKwhs] = useState([]);
 
-export default function AppliancesScreen({route,navigation}) {    
+  
 const storeData = async (value) => {
     try {
         const jsonValue = JSON.stringify(value);
