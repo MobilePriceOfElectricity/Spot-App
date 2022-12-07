@@ -10,10 +10,13 @@ import * as Notifications from "expo-notifications";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/styles';
 
-const TOKEN = 'YOUR CHARGER API KEY'
+//tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz
+
+const TOKEN = 'tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz'
 const GET_URL = 'https://202683.api.v3.go-e.io/api/status?token=';
 const POST_URL = 'https://202683.api.v3.go-e.io/api/set?token=';
 const STORAGE_KEY = "@hinta_Key";
+const STORAGE_KEY_NOTI = "@noti_Key";
 
 // BackGroundtask
 let setStateFn = () => {
@@ -49,23 +52,16 @@ const ElCarScreen = (props) => {
     const [state, setState] = useState(null);
     const [refreshing, setRefreshing] = React.useState(false);
     const [priceNow, setPriceNow] = useState([])
+    const [isOn, setisOn] = useState([])
 
     useEffect(() => {
         getData()
-        schedulePushNotification()
         StorePrice()
         GetPrice()
+        StoreNotificationSet()
+        GetNotificationSet()
+        schedulePushNotification()
     }, [])
-
-    //Refresh Control
-    const onRefresh = React.useCallback(() => {
-        setRefreshing(true);
-        wait(2000).then(() => setRefreshing(false));
-        setAnswer([])
-        getData()
-        clearAsyncStorage()
-        StorePrice()
-    }, []);
 
     //Save current price
     const StorePrice = async () => {
@@ -92,6 +88,33 @@ const ElCarScreen = (props) => {
             console.log(e);
         }
     }
+
+    // Save is push notification set is enable/disable
+    const StoreNotificationSet = async () => {
+        try {
+            const jsonValue = JSON.stringify(props.notifications)
+            await AsyncStorage.setItem(STORAGE_KEY_NOTI, jsonValue)
+        } catch (e) {
+            // saving error
+        }
+    }
+
+    const GetNotificationSet = async () => {
+        try {
+            return AsyncStorage.getItem(STORAGE_KEY_NOTI)
+                .then(req => JSON.parse(req))
+                .then(json => {
+                    if (json === null) {
+                        json = [];
+                    }
+                    setisOn(json);
+                })
+                .catch(error => console.log(error));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     const clearAsyncStorage = async () => {
         AsyncStorage.removeItem(STORAGE_KEY);
     }
@@ -99,6 +122,7 @@ const ElCarScreen = (props) => {
     // Background Task
     setStateFn = setState;
     const GetCharge = 'getData'
+
     async function getData() {
         async function initBackgroundFetch(GetChargeData,
             taskFn,
@@ -170,7 +194,7 @@ const ElCarScreen = (props) => {
     async function schedulePushNotification() {
 
         const hasPushNotificationPermissionGranted = await allowsNotificationsAsync()
-        if (hasPushNotificationPermissionGranted && priceNow > answer.ecoMode) {
+        if (hasPushNotificationPermissionGranted && priceNow > price && isOn === true) {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "Auton laturi varoittaa!",
@@ -183,6 +207,29 @@ const ElCarScreen = (props) => {
         }
     }
 
+    //Tässä on pelkkä props
+    //console.log(props.price)
+
+    //Tässä asyncStorageen tallennettu props
+    //console.log(priceNow)
+
+    // Tässä sliderin value
+    //console.log(price)
+
+    //Refresh Control
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+        setAnswer([])
+        getData()
+        clearAsyncStorage()
+        //StorePrice()
+        //GetPrice()
+        //StoreNotificationSet()
+        //GetNotificationSet()
+        schedulePushNotification()
+    }, []);
+
     //Post Amper to cloud
     async function PostPower() {
         const requestOptions = {
@@ -193,7 +240,7 @@ const ElCarScreen = (props) => {
                 .then(response => {
                     response.json()
                         .then(data => {
-                            console.log('ok', data)
+                            //console.log('ok', data)
                         });
                 })
         }
@@ -212,7 +259,7 @@ const ElCarScreen = (props) => {
                 .then(response => {
                     response.json()
                         .then(data => {
-                            console.log('ok', data)
+                            //console.log('ok', data)
                         });
                 })
         }
@@ -244,7 +291,7 @@ const ElCarScreen = (props) => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        colors={["yellow", "orange","red", "blue", "pink"]}
+                        colors={["yellow", "orange", "red", "blue", "pink"]}
                         size="large"
                         progressBackgroundColor={"black"}
                     />

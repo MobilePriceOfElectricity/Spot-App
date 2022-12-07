@@ -14,21 +14,19 @@ import { Col, Grid } from 'react-native-easy-grid'
 import moment from 'moment';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import styles from '../styles/styles';
-import { useFonts } from 'expo-font';
-import { useRef } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker'
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from "expo-notifications";
 import {
     responsiveWidth
-  } from "react-native-responsive-dimensions";
+} from "react-native-responsive-dimensions";
 import { ElCarScreen } from './ElCarScreen';
 import { AppliancesScreen } from './AppliancesScreen'
-  
+
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
-  }
+}
 
 const URL = 'https://web-api.tp.entsoe.eu/api?'
 const TOKEN = 'securityToken=419b446b-122c-414f-8586-fc7d6ff39def'
@@ -79,7 +77,7 @@ const PricesScreen = () => {
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         wait(2000).then(() => setRefreshing(false));
-      }, []);
+    }, []);
 
     // Background Task
     setStateFn = setState;
@@ -125,8 +123,6 @@ const PricesScreen = () => {
 
         initBackgroundFetch(getPrice, getPriceData, 5);
     }
-
-
 
     useEffect(() => {
         getPriceData()
@@ -180,7 +176,7 @@ const PricesScreen = () => {
         if (hour === newData[i].time || hour === '00' && newData[i].time === '01') {
             sum = ((100 + alv) / 100 * newData[i].price * 0.1).toFixed(2)
         } if (hour === '00') {
-            sum = answer.slice(-25,-24).map(val => ((100 + alv) / 100 * val.value * 0.1).toFixed(2))
+            sum = answer.slice(-25, -24).map(val => ((100 + alv) / 100 * val.value * 0.1).toFixed(2))
         }
 
     // Min, AVG, MAX
@@ -195,7 +191,7 @@ const PricesScreen = () => {
         todayMax = Math.max(...answer.slice(-48, -24).map(val => val.value));
     }
     //const avgToday = eval(today.join('+')) / today.length
-    const sumToday = today.reduce((a,v) =>  a + v, 0 )
+    const sumToday = today.reduce((a, v) => a + v, 0)
     const avgToday = sumToday / today.length
     // Last Week
     const weekMax = Math.max(...answer.slice(-168).map(val => val.value));
@@ -284,16 +280,16 @@ const PricesScreen = () => {
 
         }
     }
-   
+
     const summa = sum;
     //console.log(summa)
     return (
-        
+
         <View style={[styles.container]}>
-            
+
             <View style={styles.home} >
-                <ElCarScreen price={summa}/>
-                
+                <ElCarScreen price={summa} />
+
                 <View style={[{ marginBottom: 20, marginTop: 20 }]}>
                     <RadioForm
                         //style={theme.radio}
@@ -325,18 +321,18 @@ const PricesScreen = () => {
                         //defaultIndex={0}
                         containerStyle={{ height: 30 }}
                         onChangeItem={item => setValue(item.value)}
-                        
+
                     />
                 </View>
                 <ScrollView
-        contentContainerStyle={styles.scrollView}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
-      >
+                    contentContainerStyle={styles.scrollView}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
+                >
                     <View  >
                         <Grid >
                             <Col style={{ alignItems: 'center', marginTop: 75 }}>
@@ -385,75 +381,21 @@ const PricesScreen = () => {
                         </Col>
                     </View>
 
-                    <View style={{  marginTop: 30, alignItems: 'center'}}>
-                            <Text style={[styles.text, {textAlign: 'center', margin: 20, fontSize: 16 }]}>Hinta tänään</Text>
-                            <View>
-                                <LineChart
-                                        data={{
-                                            labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
-                                                "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
-                                            datasets: [
-                                                { data: today }
-                                            ]
-                                        }}
-                                        width={responsiveWidth(90)} // from react-native
-                                        height={200}
-                                        //yAxisLabel="€"
-                                        yAxisSuffix="snt"
-                                        yAxisInterval={1} // optional, defaults to 1
-                                        fromZero={true}
-                                        verticalLabelRotation={-40}
-                                        chartConfig={{                       
-                                            backgroundColor: "#0000",
-                                            backgroundGradientFrom: "#1f2131",
-                                            backgroundGradientTo: "#1f2131",
-                                            decimalPlaces: 2, // optional, defaults to 2dp
-                                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                            labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
-                                            style: {
-                                                borderRadius: 16
-                                                
-                                            },
-                                            propsForDots: {
-                                                r: "2",
-                                                strokeWidth: "1",
-                                                stroke: "#ffa726"
-                                            },
-                                            propsForLabels: {
-                                                fontSize: 10,
-                                                
-                                            },
-                                        }}
-                                        bezier
-                                        style={{
-                                            marginVertical: 8,
-                                            borderRadius: 16,
-                                            
-                                            
-                                            
-                                            
-                                        }}
-                                />
-                            </View>
-                        
-                    </View>
                     <View style={{ marginTop: 30, alignItems: 'center' }}>
-                         
-                            <Text style={[styles.text, { marginBottom: 20, fontSize: 16 }]}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
+                        <Text style={[styles.text, { textAlign: 'center', margin: 20, fontSize: 16 }]}>Hinta tänään</Text>
+                        <View>
                             <LineChart
                                 data={{
                                     labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
                                         "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
                                     datasets: [
-                                        {
-                                            data: tomorrow
-                                        }
+                                        { data: today }
                                     ]
                                 }}
                                 width={responsiveWidth(90)} // from react-native
                                 height={200}
                                 //yAxisLabel="€"
-                                yAxisSuffix=" snt"
+                                yAxisSuffix="snt"
                                 yAxisInterval={1} // optional, defaults to 1
                                 fromZero={true}
                                 verticalLabelRotation={-40}
@@ -466,6 +408,7 @@ const PricesScreen = () => {
                                     labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
                                     style: {
                                         borderRadius: 16
+
                                     },
                                     propsForDots: {
                                         r: "2",
@@ -474,17 +417,70 @@ const PricesScreen = () => {
                                     },
                                     propsForLabels: {
                                         fontSize: 10,
-                                        
+
                                     },
                                 }}
                                 bezier
                                 style={{
                                     marginVertical: 8,
                                     borderRadius: 16,
+
+
+
+
                                 }}
-                                
                             />
-                        
+                        </View>
+
+                    </View>
+                    <View style={{ marginTop: 30, alignItems: 'center' }}>
+
+                        <Text style={[styles.text, { marginBottom: 20, fontSize: 16 }]}>Hinta huomenna (julkaistaan päivittäin kello 14:00)</Text>
+                        <LineChart
+                            data={{
+                                labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
+                                    "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
+                                datasets: [
+                                    {
+                                        data: tomorrow
+                                    }
+                                ]
+                            }}
+                            width={responsiveWidth(90)} // from react-native
+                            height={200}
+                            //yAxisLabel="€"
+                            yAxisSuffix=" snt"
+                            yAxisInterval={1} // optional, defaults to 1
+                            fromZero={true}
+                            verticalLabelRotation={-40}
+                            chartConfig={{
+                                backgroundColor: "#0000",
+                                backgroundGradientFrom: "#1f2131",
+                                backgroundGradientTo: "#1f2131",
+                                decimalPlaces: 2, // optional, defaults to 2dp
+                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(166, 211, 216, ${opacity})`,
+                                style: {
+                                    borderRadius: 16
+                                },
+                                propsForDots: {
+                                    r: "2",
+                                    strokeWidth: "1",
+                                    stroke: "#ffa726"
+                                },
+                                propsForLabels: {
+                                    fontSize: 10,
+
+                                },
+                            }}
+                            bezier
+                            style={{
+                                marginVertical: 8,
+                                borderRadius: 16,
+                            }}
+
+                        />
+
                     </View>
                 </ScrollView>
             </View>
