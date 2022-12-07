@@ -1,6 +1,7 @@
+import React from 'react';
 import 'react-native-gesture-handler';
-import { Animated, Text, View, Dimensions, ScrollView, useWindowDimensions } from 'react-native';
-import { useState, useEffect } from 'react';
+import { Animated, Text, View, Dimensions, ScrollView, RefreshControl } from 'react-native';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import {
     LineChart,
     BarChart,
@@ -22,8 +23,12 @@ import * as Notifications from "expo-notifications";
 import {
     responsiveWidth
   } from "react-native-responsive-dimensions";
+import { ElCarScreen } from './ElCarScreen';
+import { AppliancesScreen } from './AppliancesScreen'
   
-
+const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
 
 const URL = 'https://web-api.tp.entsoe.eu/api?'
 const TOKEN = 'securityToken=419b446b-122c-414f-8586-fc7d6ff39def'
@@ -31,9 +36,6 @@ const DOCTYPE = '&documentType=A44'
 const OUT_BIDD_ZONE = '&outBiddingZone_Domain=10YFI-1--------U'
 const IN_DOM = '&in_Domain=10YFI-1--------U'
 const OUT_DOM = '&out_Domain=10YFI-1--------U'
-
-
-
 
 // BackGroundtask
 let setStateFn = () => {
@@ -72,13 +74,21 @@ const PricesScreen = () => {
 
     const [state, setState] = useState(null);
 
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+      }, []);
+
     // Background Task
     setStateFn = setState;
     const getPrice = 'getPriceData'
+
     async function getPriceData() {
         async function initBackgroundFetch(GetPriceData,
             taskFn,
-            interval = 60 * 1,) {
+            interval = 60 * 1) {
             try {
                 if (!TaskManager.isTaskDefined(GetPriceData)) {
                     TaskManager.defineTask(GetPriceData, taskFn);
@@ -115,7 +125,6 @@ const PricesScreen = () => {
 
         initBackgroundFetch(getPrice, getPriceData, 5);
     }
-
 
 
 
@@ -168,8 +177,10 @@ const PricesScreen = () => {
 
     let sum = ''
     for (let i = 0; i < newData.length; i++)
-        if (hour === newData[i].time) {
-            sum = newData[i].price
+        if (hour === newData[i].time || hour === '00' && newData[i].time === '01') {
+            sum = ((100 + alv) / 100 * newData[i].price * 0.1).toFixed(2)
+        } if (hour === '00') {
+            sum = answer.slice(-25,-24).map(val => ((100 + alv) / 100 * val.value * 0.1).toFixed(2))
         }
 
     // Min, AVG, MAX
@@ -183,7 +194,9 @@ const PricesScreen = () => {
         todayMin = Math.min(...answer.slice(-48, -24).map(val => val.value));
         todayMax = Math.max(...answer.slice(-48, -24).map(val => val.value));
     }
-    const avgToday = eval(today.join('+')) / today.length
+    //const avgToday = eval(today.join('+')) / today.length
+    const sumToday = today.reduce((a,v) =>  a + v, 0 )
+    const avgToday = sumToday / today.length
     // Last Week
     const weekMax = Math.max(...answer.slice(-168).map(val => val.value));
     const weekMin = Math.min(...answer.slice(-168).map(val => val.value));
@@ -247,8 +260,8 @@ const PricesScreen = () => {
     async function schedulePushNotification() {
 
         const hasPushNotificationPermissionGranted = await allowsNotificationsAsync()
-        console.log(hasPushNotificationPermissionGranted)
-        if (hasPushNotificationPermissionGranted && ((100 + alv) / 100 * sum * 0.1).toFixed(2) > 30) {
+        //console.log(hasPushNotificationPermissionGranted)
+        if (hasPushNotificationPermissionGranted && sum > 30) {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "Hinta tieto",
@@ -259,7 +272,7 @@ const PricesScreen = () => {
             });
 
         }
-        if (hasPushNotificationPermissionGranted && ((100 + alv) / 100 * sum * 0.1).toFixed(2) < 10) {
+        if (hasPushNotificationPermissionGranted && sum < 10) {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "Hinta tieto",
@@ -271,15 +284,16 @@ const PricesScreen = () => {
 
         }
     }
-
-    console.log(((100 + alv) / 100 * sum * 0.1).toFixed(2))
+   
+    const summa = sum;
+    //console.log(summa)
     return (
+        
         <View style={[styles.container]}>
+            
             <View style={styles.home} >
-
-
-
-
+                <ElCarScreen price={summa}/>
+                
                 <View style={[{ marginBottom: 20, marginTop: 20 }]}>
                     <RadioForm
                         //style={theme.radio}
@@ -314,7 +328,15 @@ const PricesScreen = () => {
                         
                     />
                 </View>
-                <ScrollView>
+                <ScrollView
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
                     <View  >
                         <Grid >
                             <Col style={{ alignItems: 'center', marginTop: 75 }}>
@@ -335,16 +357,11 @@ const PricesScreen = () => {
                                         borderRadius: 16,
                                         shadowColor: "#a6d3d8",
                                         elevation: 5,
-
                                     }}
-                                    
-
                                 />
-
                             </Col>
                         </Grid>
                     </View>
-
 
                     <View style={styles.home}>
                         <Col style={{ alignItems: 'center', marginTop: 50, marginBottom: 30 }}>
@@ -363,7 +380,7 @@ const PricesScreen = () => {
                                 elevation: 10,
                                 shadowRadius: 50
                             }}>
-                                <Text style={styles.text}>{((100 + alv) / 100 * sum * 0.1).toFixed(2)} snt/kWh</Text>
+                                <Text style={styles.text}>{sum} snt/kWh</Text>
                             </View>
                         </Col>
                     </View>
@@ -386,9 +403,7 @@ const PricesScreen = () => {
                                         yAxisInterval={1} // optional, defaults to 1
                                         fromZero={true}
                                         verticalLabelRotation={-40}
-                                        
-                                        chartConfig={{
-                                            
+                                        chartConfig={{                       
                                             backgroundColor: "#0000",
                                             backgroundGradientFrom: "#1f2131",
                                             backgroundGradientTo: "#1f2131",
