@@ -272,6 +272,25 @@ const PricesScreen = () => {
         }
     }
 
+    const getBackgroundColor = () => {
+        let color;
+        if (value === 0) {
+            color = '';
+        } else if (value >= 1 && value < 25) {
+            color = 'red';
+        } else if (value >= 25 && value < 50) {
+            color = 'orange';
+        } else if (value >= 50 && value < 90) {
+            color = 'yellow';
+        } else if (value >= 90) {
+            color = 'green';
+        }
+        return color;
+    };
+
+    
+    //style={[styles.bar, { width: value * 1.5, backgroundColor: getBackgroundColor() }]}
+
     console.log(((100 + alv) / 100 * sum * 0.1).toFixed(2))
     return (
         <View style={[styles.container]}>
@@ -350,7 +369,7 @@ const PricesScreen = () => {
                         <Col style={{ alignItems: 'center', marginTop: 50, marginBottom: 30 }}>
                             <Text style={[styles.text, { marginBottom: 20, fontSize: 20 }]}>Hinta nyt</Text>
                             <View style={{
-                                width: 175,
+                                width: value * 1.5, shadowColor: getBackgroundColor() ,
                                 height: 175,
                                 backgroundColor: 'black',
                                 borderRadius: 100,
@@ -358,7 +377,7 @@ const PricesScreen = () => {
                                 alignSelf: 'center',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                shadowColor: "#00FF00",
+                                //shadowColor: "#00FF00",
                                 //shadowOpacity: 5,
                                 elevation: 10,
                                 shadowRadius: 50
@@ -465,7 +484,7 @@ const PricesScreen = () => {
                                 bezier
                                 style={{
                                     marginVertical: 8,
-                                    borderRadius: 16,
+                                    borderRadius: 28,
                                 }}
                                 
                             />
