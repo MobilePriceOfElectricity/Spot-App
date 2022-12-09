@@ -1,6 +1,6 @@
 //import { useNavigation, useRoute } from "@react-navigation/native";
 import "react-native-gesture-handler";
-import { Animated, Text, View, Dimensions, ScrollView, RefreshControl } from 'react-native';
+import { Animated, Text, View, Dimensions, ScrollView, RefreshControl, FlatList, SafeAreaView } from 'react-native';
 import {
     LineChart,
     BarChart,
@@ -17,10 +17,6 @@ import { responsiveWidth } from "react-native-responsive-dimensions";
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { LoadingIcon } from './LoadingIcon';
 import styles from '../styles/styles';
-import { ElCarScreen } from "./ElCarScreen";
-import { SettingsScreen } from "./SettingsScreen";
-
-
 
 const HomeScreen = ({navigation}) => {
     const [isLoaded, setIsLoaded] = useState();
@@ -205,11 +201,12 @@ const HomeScreen = ({navigation}) => {
     //console.log(month)
 
 
+
     if (!isLoaded) {
         return (<LoadingIcon />)
     } else {
         return (
-            <View style={styles.container}>
+            <View style={styles.container}>                   
                 <View style={styles.home}>
                     <View style={[{ marginBottom: 20, marginTop: 20 }]}>
                         <RadioForm
@@ -384,7 +381,9 @@ const HomeScreen = ({navigation}) => {
                                 
                             />  
                     </View>
+
                     </ScrollView>
+                    
                 </View>
             </View>
         );

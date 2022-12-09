@@ -7,7 +7,7 @@ import { PricesScreen} from './components/PricesScreen';
 import { PriceLimitsScreen } from './components/PriceLimitsScreen';
 import { AlarmsScreen } from './components/AlarmsScreen';
 import { ElCarScreen } from './components/ElCarScreen';
-import { ContactScreen } from './components/ContactScreen';
+import { PriceListScreen } from './components/PriceListScreen';
 import { HomeScreen } from './components/HomeScreen';
 import {SettingsScreen} from './components/SettingsScreen';
 import { useFonts } from 'expo-font';
@@ -84,9 +84,9 @@ export default function DrawerNavigation(){
         initialParams={{hinta: 10, id: 1}}
         />
         <Drawer.Screen 
-        name ="Ota yhteyttä" 
-        component={ContactScreen}
-        options={{drawerIcon: () => <MaterialCommunityIcons name="email" size={23} color='#a6d3d8'/>}} 
+        name ="Tuntihinnat" 
+        component={PriceListScreen}
+        options={{drawerIcon: () => <FontAwesome name="list-ul" size={24} color='#a6d3d8' />}} 
         />
         <Drawer.Screen 
           name="Piirakka" 

@@ -29,4 +29,26 @@ export default StyleSheet.create({
       color: '#a6d3d8',
       fontFamily: "MontserratRegular"
     },
+    item: {
+      backgroundColor: '#1f2131',
+      padding: 10,
+      marginVertical: 12,
+      marginHorizontal: 20,
+      borderRadius: 100,
+      //paddingHorizontal: 40,
+      alignSelf: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: "#00FF00",
+      //shadowOpacity: 5,
+      elevation: 10,
+      shadowRadius: 50
+      
+    },
+    title: {
+      fontSize: 16,
+      fontFamily: "MontserratRegular",
+      color: '#a6d3d8',
+
+    },
   });
