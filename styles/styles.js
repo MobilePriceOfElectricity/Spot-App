@@ -4,8 +4,6 @@ export default StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#16171d',
-      
-
     },
     home: {
       flex: 1,
@@ -16,7 +14,6 @@ export default StyleSheet.create({
     chartit: {
       paddingVertical: 20,
       paddingHorizontal: 10,
-
     },
     text: {
       color: '#a6d3d8',
@@ -29,6 +26,11 @@ export default StyleSheet.create({
       fontWeight: 'bold',
       marginTop: 20
   },
+  sliderText: {
+    color: '#a6d3d8',
+    fontFamily: "MontserratRegular", 
+    fontSize: 11,
+},
     
 
     

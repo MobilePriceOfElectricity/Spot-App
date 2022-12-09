@@ -1,22 +1,26 @@
-import {View, Text, ScrollView, FlatList, Switch, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { useState } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { Col, Grid, Row } from "react-native-easy-grid";
 import Slider from '@react-native-community/slider';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from "expo-notifications";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/styles';
 
-//let deviceWidth = Dimensions.get('window').width
-const TOKEN = 'EWlUGgyLmgDNIOmrykKzGlwn1p3SrdZY'
+//tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz
+
+const TOKEN = 'tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz'
 const GET_URL = 'https://202683.api.v3.go-e.io/api/status?token=';
 const POST_URL = 'https://202683.api.v3.go-e.io/api/set?token=';
-
+const STORAGE_KEY = "@hinta_Key";
+const STORAGE_KEY_NOTI = "@noti_Key";
 
 // BackGroundtask
 let setStateFn = () => {
-    console.log("State not yet initialized");
+    //console.log("State not yet initialized");
 };
 
 // notification
@@ -28,6 +32,7 @@ Notifications.setNotificationHandler({
     }),
 });
 
+
 export async function allowsNotificationsAsync() {
     const settings = await Notifications.getPermissionsAsync();
     return (
@@ -35,17 +40,89 @@ export async function allowsNotificationsAsync() {
     );
 }
 
-const ElCarScreen = () => {
-    const [chargerIsOn, setChargerIsOn] = useState(false);
-    const [ecoIsOn, setEcoIsOn] = useState(false);
+//Refresh control
+const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
+const ElCarScreen = (props) => {
     const [answer, setAnswer] = useState([]);
     const [power, setPower] = useState(0)
     const [price, setPrice] = useState(0)
     const [state, setState] = useState(null);
+    const [refreshing, setRefreshing] = React.useState(false);
+    const [priceNow, setPriceNow] = useState([])
+    const [isOn, setisOn] = useState([])
+
+    useEffect(() => {
+        getData()
+        StorePrice()
+        GetPrice()
+        StoreNotificationSet()
+        GetNotificationSet()
+        schedulePushNotification()
+    }, [])
+
+    //Save current price
+    const StorePrice = async () => {
+        try {
+            const jsonValue = JSON.stringify(props.price)
+            await AsyncStorage.setItem(STORAGE_KEY, jsonValue)
+        } catch (e) {
+            // saving error
+        }
+    }
+
+    const GetPrice = async () => {
+        try {
+            return AsyncStorage.getItem(STORAGE_KEY)
+                .then(req => JSON.parse(req))
+                .then(json => {
+                    if (json === null) {
+                        json = [];
+                    }
+                    setPriceNow(json);
+                })
+                .catch(error => console.log(error));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    // Save is push notification set is enable/disable
+    const StoreNotificationSet = async () => {
+        try {
+            const jsonValue = JSON.stringify(props.notifications)
+            await AsyncStorage.setItem(STORAGE_KEY_NOTI, jsonValue)
+        } catch (e) {
+            // saving error
+        }
+    }
+
+    const GetNotificationSet = async () => {
+        try {
+            return AsyncStorage.getItem(STORAGE_KEY_NOTI)
+                .then(req => JSON.parse(req))
+                .then(json => {
+                    if (json === null) {
+                        json = [];
+                    }
+                    setisOn(json);
+                })
+                .catch(error => console.log(error));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const clearAsyncStorage = async () => {
+        AsyncStorage.removeItem(STORAGE_KEY);
+    }
 
     // Background Task
     setStateFn = setState;
     const GetCharge = 'getData'
+
     async function getData() {
         async function initBackgroundFetch(GetChargeData,
             taskFn,
@@ -76,13 +153,13 @@ const ElCarScreen = () => {
                         CurkW1: data.nrg[7], CurkW2: data.nrg[8], CurkW3: data.nrg[9], // Lautaus hetken kW
                         cbl: data.cbl,
                         EnergyNow: data.wh, // Lataus energia nyt
-                        EnergyTotalNow: data.eto, //ladattu energia
+                        EnergyTotalNow: data.dwo, //ladattu energia
                         EnergyTotal: data.etop, // energia yhteensä
-                        ecoMode: data.awp // ecomoden hintaraja
+                        ecoMode: data.awp, // ecomoden hintaraja
+                        status: data.car // status
 
                     };
                     setAnswer(parseData)
-                    console.log("getData() ", answer);
                     setStateFn(parseData);
                 })
                 .catch(e => console.log(e))
@@ -91,32 +168,23 @@ const ElCarScreen = () => {
                 : BackgroundFetch.Result.NoData;
         } catch (err) {
         }
-
         initBackgroundFetch(GetCharge, getData, 5);
     }
 
-    useEffect(() => {
-        // notification
-        schedulePushNotification()
-        // Send power to cloud
-        PostPower()
-        // Hakee dataa
-        getData()
-    }, [])
-
-    // Lataus päälle/pois
-    const chargerOn = () => setChargerIsOn(previusState => !previusState)
-
-    // Latausvirran säätö
+    //Power slider
     const min = 6;
-    const max = 32;
-    const valueAmp = answer      .amp
-    console.log(valueAmp)
-    // eco mode
-    const ecoOn = () => setEcoIsOn(previusState => !previusState)
-    //Hintaraja
+    const max = 16;
+    const valueAmp = 10;
+
+    //Energy info
+    const energyNow = answer.EnergyTotalNow
+    const energyThisCharge = answer.EnergyTotalNow
+    const energyTotal = answer.EnergyTotal
+
+    //Price Slider
     const eurMin = 5;
     const eurMax = 80;
+    const valuePrice = 20;
 
     if (!answer) {
         return null;
@@ -126,12 +194,11 @@ const ElCarScreen = () => {
     async function schedulePushNotification() {
 
         const hasPushNotificationPermissionGranted = await allowsNotificationsAsync()
-        console.log(hasPushNotificationPermissionGranted)
-        if (hasPushNotificationPermissionGranted && answer.amp > 24) {
+        if (hasPushNotificationPermissionGranted && priceNow > price && isOn === true) {
             await Notifications.scheduleNotificationAsync({
                 content: {
-                    title: "Vaara",
-                    body: 'Nyt tulee virtaa niin että johdot on punaiset ja sulakkeet paukkuu',
+                    title: "Auton laturi varoittaa!",
+                    body: 'Tämän hetkinen hinta ylittää asettamasi rajan. Nyt ei ole sopiva hetki ladata autoa',
                     data: { data: 'goes here' },
                 },
                 trigger: { seconds: 2 },
@@ -139,45 +206,105 @@ const ElCarScreen = () => {
 
         }
     }
-    
-    // Post Amper to cloud
+
+    //Tässä on pelkkä props
+    //console.log(props.price)
+
+    //Tässä asyncStorageen tallennettu props
+    //console.log(priceNow)
+
+    // Tässä sliderin value
+    //console.log(price)
+
+    //Refresh Control
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+        setAnswer([])
+        getData()
+        clearAsyncStorage()
+        //StorePrice()
+        //GetPrice()
+        //StoreNotificationSet()
+        //GetNotificationSet()
+        schedulePushNotification()
+    }, []);
+
+    //Post Amper to cloud
     async function PostPower() {
         const requestOptions = {
-            headers: { 'Content-Type': 'application/json' },  
+            headers: { 'Content-Type': 'application/json' },
         };
-            try {
-                await fetch(POST_URL + TOKEN + '&amp=' + power , requestOptions)
-                    .then(response => {
-                        response.json()
-                            .then(data => {
-                                console.log('ok', data)
-                            });
-                    })
-            }
-            catch (error) {
-                console.error(error);
-            }
-    } 
+        try {
+            await fetch(POST_URL + TOKEN + '&amp=' + power, requestOptions)
+                .then(response => {
+                    response.json()
+                        .then(data => {
+                            //console.log('ok', data)
+                        });
+                })
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    //Post price limit to cloud
+    async function PostPrice() {
+        const requestOptions = {
+            headers: { 'Content-Type': 'application/json' },
+        };
+        try {
+            await fetch(POST_URL + TOKEN + '&awp=' + price, requestOptions)
+                .then(response => {
+                    response.json()
+                        .then(data => {
+                            //console.log('ok', data)
+                        });
+                })
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    //Check charger status
+    let status = ''
+    if (answer.status === 1) {
+        status = 'Ei autoa'
+    }
+    if (answer.status === 2) {
+        status = 'Ladataan'
+    }
+    if (answer.status === 3) {
+        status = 'Odotetaan autoa'
+    }
+    if (answer.status === 4) {
+        status = 'Lataus valmis'
+    }
 
     return (
-
         <View style={styles.home}>
-            <ScrollView>
+            <ScrollView
+                contentContainerStyle={styles.scrollView}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={["yellow", "orange", "red", "blue", "pink"]}
+                        size="large"
+                        progressBackgroundColor={"black"}
+                    />
+                }
+            >
                 <Text style={styles.boldText}>{answer.name}</Text>
                 <View>
                     <Grid>
                         <Row style={styles.onOff}>
-                            <Col size={50}><Text style={styles.boldText}>Aloita lataus</Text></Col>
-                            <Col size={20}>
-                                <Switch
-                                    value={chargerIsOn}
-                                    onValueChange={chargerOn}
-                                    style={styles.switch}
-                                />
-                            </Col>
+                            <Col><Text style={styles.boldText}>{status}</Text></Col>
                         </Row>
                         <Row>
-                            <Text style={styles.text}>Latausvirta {answer.amp}A</Text>
+                            <Text style={styles.text}>Latausvirta {power}A</Text>
                         </Row>
                         <Row style={styles.row}>
                             <Col size={10}><Text style={styles.sliderText}>{min}A</Text></Col>
@@ -188,11 +315,10 @@ const ElCarScreen = () => {
                                     maximumValue={max}
                                     step={1}
                                     value={valueAmp}
-                                    onValueChange={(val) => (setPower(val), PostPower(), getData())}
-                                    minimumTrackTintColor="red"
-                                    maximumTrackTintColor="green"
+                                    onValueChange={(val) => (setPower(val), PostPower())}
+                                    minimumTrackTintColor="orange"
+                                    maximumTrackTintColor="#a6d3d8"
                                 />
-
                             </Col>
                             <Col size={10}><Text style={styles.sliderText}>{max}A</Text></Col>
                         </Row>
@@ -203,16 +329,10 @@ const ElCarScreen = () => {
                 <Text style={styles.text}>{answer.CurAmp1}A, {answer.CurAmp2}A, {answer.CurAmp3}A</Text>
                 <Text style={styles.text}>{answer.CurkW1}kW, {answer.CurkW2}kW, {answer.CurkW3}kW</Text>
                 <Row style={styles.eco}>
-                    <Col size={50}><Text style={styles.boldText}>Eco-Tila:</Text></Col>
-                    <Col size={20}>
-                        <Switch
-                            value={ecoIsOn}
-                            onValueChange={ecoOn}
-                            style={styles.switch1}
-                        />
-                    </Col>
+                    <Col><Text style={styles.boldText}>Hinta hälytys</Text></Col>
                 </Row>
-                <Text style={styles.text}>Hintaraja: {answer.ecoMode} snt/kWh</Text>
+                <Text style={styles.text}>Sähkön hinta nyt: {priceNow} snt/kWh</Text>
+                <Text style={styles.text}>Hintaraja: {price} snt/kWh</Text>
                 <Row style={styles.row}>
                     <Col size={10}><Text style={styles.sliderText}>{eurMin} snt/kWh</Text></Col>
                     <Col size={70}>
@@ -220,19 +340,19 @@ const ElCarScreen = () => {
                             style={styles.slider}
                             minimumValue={eurMin}
                             maximumValue={eurMax}
-                            step={1}
-                            value={10}
-                            onValueChange={(val) => setPrice(val)}
-                            minimumTrackTintColor="red"
-                            maximumTrackTintColor="green"
+                            step={5}
+                            value={valuePrice}
+                            onValueChange={(val) => (setPrice(val), PostPrice())}
+                            minimumTrackTintColor="orange"
+                            maximumTrackTintColor="#a6d3d8"
                         />
                     </Col>
                     <Col size={10}><Text style={styles.sliderText}>{eurMax}snt/kWh</Text></Col>
                 </Row>
                 <Text style={styles.boldText}>Energia tiedot: </Text>
-                <Text style={styles.text}>Energia nyt: {answer.EnergyNow}kW</Text>
-                <Text style={styles.text}>Energia tällä latauksella: {answer.EnergyTotalNow}kW</Text>
-                <Text style={styles.text}>Energia yhteensä: {answer.EnergyTotal}kW</Text>
+                <Text style={styles.text}>Energia nyt: {(energyNow * 0.001).toFixed(2)}kW</Text>
+                <Text style={styles.text}>Energia tällä latauksella: {(energyThisCharge * 0.001).toFixed(2)}kW</Text>
+                <Text style={styles.text}>Energia yhteensä: {(energyTotal * 0.001).toFixed(2)}kW</Text>
             </ScrollView>
         </View>
     );
