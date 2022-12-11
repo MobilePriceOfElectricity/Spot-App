@@ -1,7 +1,7 @@
 import React from 'react';
 import 'react-native-gesture-handler';
 import { Animated, Text, View, Dimensions, ScrollView, RefreshControl } from 'react-native';
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     LineChart,
     BarChart,
@@ -22,7 +22,6 @@ import {
     responsiveWidth
 } from "react-native-responsive-dimensions";
 import { ElCarScreen } from './ElCarScreen';
-import { AppliancesScreen } from './AppliancesScreen'
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -257,7 +256,7 @@ const PricesScreen = () => {
 
         const hasPushNotificationPermissionGranted = await allowsNotificationsAsync()
         //console.log(hasPushNotificationPermissionGranted)
-        if (hasPushNotificationPermissionGranted && sum > 30) {
+        if (hasPushNotificationPermissionGranted && sum > 100) {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "Hinta tieto",
@@ -268,7 +267,7 @@ const PricesScreen = () => {
             });
 
         }
-        if (hasPushNotificationPermissionGranted && sum < 10) {
+        if (hasPushNotificationPermissionGranted && sum < 1) {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "Hinta tieto",

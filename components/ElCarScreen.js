@@ -1,22 +1,27 @@
 import React from 'react';
 import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { useState } from 'react';
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 import { Col, Grid, Row } from "react-native-easy-grid";
 import Slider from '@react-native-community/slider';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from "expo-notifications";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { responsiveWidth } from "react-native-responsive-dimensions";
+import { LoadingIcon } from './LoadingIcon';
 import styles from '../styles/styles';
+//import { useRoute } from '@react-navigation/native';
+
+
+//liittyy fetchiin
+import moment from 'moment';
 
 //tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz
 
 const TOKEN = 'tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz'
 const GET_URL = 'https://202683.api.v3.go-e.io/api/status?token=';
 const POST_URL = 'https://202683.api.v3.go-e.io/api/set?token=';
-const STORAGE_KEY = "@hinta_Key";
-const STORAGE_KEY_NOTI = "@noti_Key";
 
 // BackGroundtask
 let setStateFn = () => {
@@ -45,79 +50,56 @@ const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
-const ElCarScreen = (props) => {
+const ElCarScreen = ({ route }) => {
+    const [isLoaded, setIsLoaded] = useState();
     const [answer, setAnswer] = useState([]);
     const [power, setPower] = useState(0)
-    const [price, setPrice] = useState(0)
+    const [hourPrice, setHourPrice] = useState([])
+    const [priceLimit, setPriceLimit] = useState([])
     const [state, setState] = useState(null);
     const [refreshing, setRefreshing] = React.useState(false);
-    const [priceNow, setPriceNow] = useState([])
-    const [isOn, setisOn] = useState([])
+    //const [priceNow, setPriceNow] = useState([])
+    //const [isOn, setisOn] = useState([])
+
+
+    //liittyy fetchiin
+    const [hour, setHour] = useState();
+
+
+    //liittyy fetchiin
+    //Fetch price
+    const fetchToday = () => {
+        fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEstoeeData.php', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+                'mode': 'no-cors'
+            }, body: JSON.stringify({
+                key: 'test',
+            })
+        })
+            .then((resp) => resp.json())
+            .then((res) => {
+                //console.log(res[0]['24h'])
+                setHourPrice(res[0]['24h'])
+            })
+        setIsLoaded(true)
+    }
 
     useEffect(() => {
+        //console.log(route.params.hinta)
+        //console.log(route.params.id)
+        //setPrice1(props.price)
+        fetchToday()
         getData()
-        StorePrice()
-        GetPrice()
-        StoreNotificationSet()
-        GetNotificationSet()
         schedulePushNotification()
+
+        //liittyy fetchiin
+        let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
+        setHour(curDate.substring(8, 10))
     }, [])
 
-    //Save current price
-    const StorePrice = async () => {
-        try {
-            const jsonValue = JSON.stringify(props.price)
-            await AsyncStorage.setItem(STORAGE_KEY, jsonValue)
-        } catch (e) {
-            // saving error
-        }
-    }
-
-    const GetPrice = async () => {
-        try {
-            return AsyncStorage.getItem(STORAGE_KEY)
-                .then(req => JSON.parse(req))
-                .then(json => {
-                    if (json === null) {
-                        json = [];
-                    }
-                    setPriceNow(json);
-                })
-                .catch(error => console.log(error));
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    // Save is push notification set is enable/disable
-    const StoreNotificationSet = async () => {
-        try {
-            const jsonValue = JSON.stringify(props.notifications)
-            await AsyncStorage.setItem(STORAGE_KEY_NOTI, jsonValue)
-        } catch (e) {
-            // saving error
-        }
-    }
-
-    const GetNotificationSet = async () => {
-        try {
-            return AsyncStorage.getItem(STORAGE_KEY_NOTI)
-                .then(req => JSON.parse(req))
-                .then(json => {
-                    if (json === null) {
-                        json = [];
-                    }
-                    setisOn(json);
-                })
-                .catch(error => console.log(error));
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    const clearAsyncStorage = async () => {
-        AsyncStorage.removeItem(STORAGE_KEY);
-    }
 
     // Background Task
     setStateFn = setState;
@@ -171,6 +153,18 @@ const ElCarScreen = (props) => {
         initBackgroundFetch(GetCharge, getData, 5);
     }
 
+
+    //Liittyy fetchiin
+        //Tarkista kello
+        let priceNow = ''
+        for (let i = 0; i < hourPrice.length; i++)
+            if (hour === hourPrice[i].time) {
+                priceNow = ((100 + 10) / 100 * hourPrice[i].price).toFixed(2)
+            }
+
+    //console.log(priceNow)
+
+
     //Power slider
     const min = 6;
     const max = 16;
@@ -184,7 +178,7 @@ const ElCarScreen = (props) => {
     //Price Slider
     const eurMin = 5;
     const eurMax = 80;
-    const valuePrice = 20;
+    const valuePrice = 70;
 
     if (!answer) {
         return null;
@@ -194,7 +188,7 @@ const ElCarScreen = (props) => {
     async function schedulePushNotification() {
 
         const hasPushNotificationPermissionGranted = await allowsNotificationsAsync()
-        if (hasPushNotificationPermissionGranted && priceNow > price && isOn === true) {
+        if (hasPushNotificationPermissionGranted && priceLimit < priceNow) {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "Auton laturi varoittaa!",
@@ -222,11 +216,7 @@ const ElCarScreen = (props) => {
         wait(2000).then(() => setRefreshing(false));
         setAnswer([])
         getData()
-        clearAsyncStorage()
-        //StorePrice()
-        //GetPrice()
-        //StoreNotificationSet()
-        //GetNotificationSet()
+        fetchToday()
         schedulePushNotification()
     }, []);
 
@@ -255,7 +245,7 @@ const ElCarScreen = (props) => {
             headers: { 'Content-Type': 'application/json' },
         };
         try {
-            await fetch(POST_URL + TOKEN + '&awp=' + price, requestOptions)
+            await fetch(POST_URL + TOKEN + '&awp=' + priceNow, requestOptions)
                 .then(response => {
                     response.json()
                         .then(data => {
@@ -269,133 +259,262 @@ const ElCarScreen = (props) => {
     }
 
     //Check charger status
-    let status = ''
-    if (answer.status === 1) {
-        status = 'Ei autoa'
-    }
-    if (answer.status === 2) {
-        status = 'Ladataan'
-    }
-    if (answer.status === 3) {
-        status = 'Odotetaan autoa'
-    }
-    if (answer.status === 4) {
-        status = 'Lataus valmis'
+    const StatusIcon = () => {
+        //let status = ''
+        if (answer.status === 1) {
+            return (
+                <View>
+                    <MaterialCommunityIcons name="sleep" size={24} color="orange" />
+                    <Ionicons name="car-sport" size={70} color="orange" />
+                </View>
+                // ei autoa kytketty
+            )
+        }
+        if (answer.status === 2) {
+            <View>
+                <Ionicons name="ios-flash-sharp" size={30} color="orange" />
+                <Ionicons name="car-sport" size={70} color="orange" />
+            </View>
+            // Ladataan
+        }
+        if (answer.status === 3) {
+            <View>
+                <MaterialCommunityIcons name="sleep" size={24} color="orange" />
+                <Ionicons name="car-sport" size={70} color="orange" />
+            </View>
+            // Odotetaan autolta lupaa
+        }
+        if (answer.status === 4) {
+            <View>
+                <MaterialIcons name="done-outline" size={24} color="orange" />
+                <Ionicons name="car-sport" size={70} color="orange" />
+            </View>
+            // lataus valmis
+        }
     }
 
+    //const route = useRoute();
+
+    //console.log(route.params.price)
+
+    //const {pricenytte, ID} = route.params
+    //const { hinta, id } = route.params;
+
+    //console.log(route.params.hinta)
+
+
+    if (!isLoaded) {
+        return (<LoadingIcon />)
+    } else {
     return (
-        <View style={styles.home}>
-            <ScrollView
-                contentContainerStyle={styles.scrollView}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        colors={["yellow", "orange", "red", "blue", "pink"]}
-                        size="large"
-                        progressBackgroundColor={"black"}
-                    />
-                }
-            >
-                <Text style={styles.boldText}>{answer.name}</Text>
-                <View>
+        <View style={styles.container}>
+            <View style={responsiveWidth(90)}>
+                <ScrollView style={[{ marginBottom: 20, marginTop: 20 }]}
+                    contentContainerStyle={styles.scrollView}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={["yellow", "orange", "red", "blue", "pink"]}
+                            size="large"
+                            progressBackgroundColor={"black"}
+                        />
+                    }
+                >
+                    <Text style={[styles.text, {
+                        marginBottom: 0, fontSize: 20, fontWeight: '700', letterSpacing: 2, textAlign: 'center'
+                    }]}>{answer.name}</Text>
+                    <View>
+                        <View style={styles.home}>
+                            <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50 }}>
+                                <View style={{
+                                    width: 155,
+                                    height: 155,
+                                    backgroundColor: 'black',
+                                    borderRadius: 100,
+                                    //paddingHorizontal: 40,
+                                    alignSelf: 'center',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    shadowColor: "orange",
+                                    //shadowOpacity: 5,
+                                    elevation: 30,
+                                    shadowRadius: 50
+                                }}>
+                                    <Text style={styles.text}>{StatusIcon()}</Text>
+                                </View>
+                            </Col>
+                        </View>
+                        <Grid>
+                        <Text style={[styles.text, { textAlign: 'center', fontSize: 18, marginBottom: 20 }]}>Latausvirta {power}A</Text>
+                            <Row style={styles.row}>
+                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'right', marginBottom: 10 }]}>{min}A</Text></Col>
+                                <Col size={70}>
+                                    <Slider
+                                        style={{transform: [{ scaleY: 2 }] }}
+                                        minimumValue={min}
+                                        maximumValue={max}
+                                        step={1}
+                                        value={valueAmp}
+                                        onValueChange={(val) => (setPower(val), PostPower())}
+                                        minimumTrackTintColor="orange"
+                                        maximumTrackTintColor="#a6d3d8"
+                                        thumbTintColor='#a6d3d8'
+                                    />
+                                </Col>
+                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'left' }]}>{max}A</Text></Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <View style={styles.home}>
+                                       
+                                        <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50, marginLeft:50 }}>
+                                            <View style={{
+                                                width: 80,
+                                                height: 80,
+                                                marginBottom:10,
+                                                backgroundColor: 'black',
+                                                borderRadius: 100,
+                                                //paddingHorizontal: 40,
+                                                alignSelf: 'center',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                shadowColor: "orange",
+                                                //shadowOpacity: 5,
+                                                elevation: 30,
+                                                shadowRadius: 50
+                                            }}>
+                                                <Text style={[styles.text, { textAlign: 'center', fontSize: 16 }]}>{(priceNow * 0.01).toFixed(2)} €</Text>
+                                            </View>
+                                            <MaterialCommunityIcons name="home-lightning-bolt-outline" size={24} color="#a6d3d8" />
+                                        </Col>
+                                    </View>
+                                </Col>
+                                <Col>
+                                    <View style={styles.home}>
+                                        <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50, marginRight:50 }}>
+                                            <View style={{
+                                                width: 80,
+                                                height: 80,
+                                                marginBottom:10,
+                                                backgroundColor: 'black',
+                                                borderRadius: 100,
+                                                //paddingHorizontal: 40,
+                                                alignSelf: 'center',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                shadowColor: "orange",
+                                                //shadowOpacity: 5,
+                                                elevation: 30,
+                                                shadowRadius: 50
+                                            }}>
+                                                <Text style={[styles.text, { textAlign: 'center', fontSize: 16}]}>{(priceLimit * 0.01).toFixed(2)} €</Text>
+                                            </View>
+                                            <MaterialIcons name="notifications-on" size={24} color="#a6d3d8" />
+                                        </Col>
+                                    </View>
+                                </Col>
+                            </Row>
+                            <Text style={[styles.text, { textAlign: 'center', fontSize: 18, marginBottom: 20 }]}>Aseta hinta varoitus</Text>
+                            <Row style={styles.row}>
+                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'right' }]}>{eurMin} snt/kWh</Text></Col>
+                                <Col size={70}>
+                                    <Slider
+                                        style={{transform: [{ scaleY: 2 }] }}
+                                        minimumValue={eurMin}
+                                        maximumValue={eurMax}
+                                        step={5}
+                                        value={valuePrice}
+                                        onValueChange={(val) => (setPriceLimit(val), PostPrice())}
+                                        minimumTrackTintColor="orange"
+                                        maximumTrackTintColor="#a6d3d8"
+                                        thumbTintColor='#a6d3d8'
+                                    />
+                                </Col>
+                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'left'  }]}>{eurMax}snt/kWh</Text></Col>
+                            </Row>
+                        </Grid>
+                    </View>
+
+
                     <Grid>
-                        <Row style={styles.onOff}>
-                            <Col><Text style={styles.boldText}>{status}</Text></Col>
+                        <Row>
+                            <Col>
+                            <Text style={[styles.text, { fontSize: 20, marginTop: 20, marginBottom:10, textAlign: 'center'}]}>Lataus info: </Text>
+                            </Col>
+                        
                         </Row>
                         <Row>
-                            <Text style={styles.text}>Latausvirta {power}A</Text>
-                        </Row>
-                        <Row style={styles.row}>
-                            <Col size={10}><Text style={styles.sliderText}>{min}A</Text></Col>
-                            <Col size={70}>
-                                <Slider
-                                    style={styles.slider}
-                                    minimumValue={min}
-                                    maximumValue={max}
-                                    step={1}
-                                    value={valueAmp}
-                                    onValueChange={(val) => (setPower(val), PostPower())}
-                                    minimumTrackTintColor="orange"
-                                    maximumTrackTintColor="#a6d3d8"
-                                />
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{answer.Vol1}V</Text>
                             </Col>
-                            <Col size={10}><Text style={styles.sliderText}>{max}A</Text></Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.Vol2}V</Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.Vol3}V</Text>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{answer.CurAmp1}A</Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurAmp2}A</Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurAmp3}A</Text>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{answer.CurkW1}kW</Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurkW2}kW</Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurkW3}kW</Text>
+                            </Col>
                         </Row>
                     </Grid>
-                </View>
-                <Text style={styles.boldText}>Lataus info: </Text>
-                <Text style={styles.text}>{answer.Vol1}V, {answer.Vol2}V, {answer.Vol3}V</Text>
-                <Text style={styles.text}>{answer.CurAmp1}A, {answer.CurAmp2}A, {answer.CurAmp3}A</Text>
-                <Text style={styles.text}>{answer.CurkW1}kW, {answer.CurkW2}kW, {answer.CurkW3}kW</Text>
-                <Row style={styles.eco}>
-                    <Col><Text style={styles.boldText}>Hinta hälytys</Text></Col>
-                </Row>
-                <Text style={styles.text}>Sähkön hinta nyt: {priceNow} snt/kWh</Text>
-                <Text style={styles.text}>Hintaraja: {price} snt/kWh</Text>
-                <Row style={styles.row}>
-                    <Col size={10}><Text style={styles.sliderText}>{eurMin} snt/kWh</Text></Col>
-                    <Col size={70}>
-                        <Slider
-                            style={styles.slider}
-                            minimumValue={eurMin}
-                            maximumValue={eurMax}
-                            step={5}
-                            value={valuePrice}
-                            onValueChange={(val) => (setPrice(val), PostPrice())}
-                            minimumTrackTintColor="orange"
-                            maximumTrackTintColor="#a6d3d8"
-                        />
-                    </Col>
-                    <Col size={10}><Text style={styles.sliderText}>{eurMax}snt/kWh</Text></Col>
-                </Row>
-                <Text style={styles.boldText}>Energia tiedot: </Text>
-                <Text style={styles.text}>Energia nyt: {(energyNow * 0.001).toFixed(2)}kW</Text>
-                <Text style={styles.text}>Energia tällä latauksella: {(energyThisCharge * 0.001).toFixed(2)}kW</Text>
-                <Text style={styles.text}>Energia yhteensä: {(energyTotal * 0.001).toFixed(2)}kW</Text>
-            </ScrollView>
+
+                    <Grid style={[styles.text, {marginTop:20, marginBottom:50 }]}>
+                        <Row>
+                            <Col>
+                            <Text style={[styles.text, { fontSize: 20, marginBottom:10, textAlign: 'center' }]}>Energia tiedot: </Text>
+                            </Col>
+    
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Energia nyt: </Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyNow * 0.001).toFixed(2)}kW</Text>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Tällä latauksella: </Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyThisCharge * 0.001).toFixed(2)}kW</Text>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Yhteensä: </Text>
+                            </Col>
+                            <Col>
+                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyTotal * 0.001).toFixed(2)}kW</Text>
+                            </Col>
+                        </Row>
+                    </Grid>
+                </ScrollView>
+            </View>
         </View>
     );
 }
+}
 export { ElCarScreen }
-
-/* const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 50,
-        width: deviceWidth
-    },
-    text: {
-        fontSize: 15
-    },
-    boldText: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        marginTop: 20
-    },
-    switch: {
-        transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
-        marginLeft: 30
-    },
-    slider: {
-        width: 150,
-        height: 40,
-        marginLeft: 20
-    },
-    sliderText: {
-        fontSize: 11,
-    },
-    onOff: {
-        marginBottom: 30
-    },
-    eco: {
-        marginBottom: 30
-    },
-    switch1: {
-        transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
-        marginLeft: 30
-    },
-}); */

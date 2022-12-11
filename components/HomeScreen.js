@@ -1,6 +1,6 @@
-
+//import { useNavigation, useRoute } from "@react-navigation/native";
 import "react-native-gesture-handler";
-import { Animated, Text, View, Dimensions, ScrollView, RefreshControl } from 'react-native';
+import { Animated, Text, View, Dimensions, ScrollView, RefreshControl, FlatList, SafeAreaView } from 'react-native';
 import {
     LineChart,
     BarChart,
@@ -18,12 +18,11 @@ import { useState, useEffect, useLayoutEffect } from 'react';
 import { LoadingIcon } from './LoadingIcon';
 import styles from '../styles/styles';
 
-
-
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
     const [isLoaded, setIsLoaded] = useState();
     // Data
     const [today, setToday] = useState([])
+    const [nextDay, setNextDay] = useState([])
     const [week, setWeek] = useState([])
     const [month, setMonth] = useState([])
     //Alv
@@ -38,7 +37,7 @@ const HomeScreen = () => {
         { label: 'Edelliset 31 vrk', value: 'LastMonth' },
     ]);
 
-    const fetchData = () => {
+    const fetchToday = () => {
         fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEstoeeData.php', {
             method: 'POST',
             headers: {
@@ -51,18 +50,78 @@ const HomeScreen = () => {
         })
             .then((resp) => resp.json())
             .then((res) => {
-                //console.log(res['24h'])
+                //console.log(res[0]['24h'])
                 setToday(res[0]['24h'])
                 setWeek(res['7vk'])
                 setMonth(res['1kk'])
-                //setIsLoaded(true)
             })
         setIsLoaded(true)
     }
+
+    const fetchNextDay = () => {
+        fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEnstoeeNextDayData.php', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+                'mode': 'no-cors'
+            }, body: JSON.stringify({
+                key: 'test',
+            })
+        })
+            .then((resp) => resp.json())
+            .then((res) => {
+                //console.log(res[0]['24h'])
+                setNextDay(res[0]['24h'])
+            })
+        setIsLoaded(true)
+    }
+
+    /*
+    const fetchWeek = () => {
+        fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEnstoeeNextDayData.php', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+                'mode': 'no-cors'
+            }, body: JSON.stringify({
+                key: 'test',
+            })
+        })
+            .then((resp) => resp.json())
+            .then((res) => {
+                console.log(res[0]['24h'])
+                setNextDay(res[0]['24h'])
+            })
+        setIsLoaded(true)
+    }
+
+    const fetchMonth = () => {
+        fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEnstoeeNextDayData.php', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+                'mode': 'no-cors'
+            }, body: JSON.stringify({
+                key: 'test',
+            })
+        })
+            .then((resp) => resp.json())
+            .then((res) => {
+                console.log(res[0]['24h'])
+                setNextDay(res[0]['24h'])
+            })
+        setIsLoaded(true)
+    }
+*/
     useEffect(() => {
-        fetchData()
+        fetchToday()
+        fetchNextDay()
         let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
         setHour(curDate.substring(8, 10))
+        //sendPrice();
 
     }, [])
 
@@ -107,16 +166,17 @@ const HomeScreen = () => {
 
         // Hakee ajan mukaan dataa eri kohdasta
         let todayChart = '';
-        let tomorrow = ''
+        let tomorrowChart = '';
         if (hour < '14') {
             todayChart = today.map(val => parseInt(((100 + alv) / 100 * val.price).toFixed(2)));
-            //tomorrow = new Array(24).fill(0);
+            tomorrowChart = new Array(23).fill(0);
         } else {
             todayChart = today.map(val => parseInt(((100 + alv) / 100 * val.price).toFixed(2)));
-            tomorrow = today.map(val => parseInt((100 + alv) / 100 * val.price).toFixed(2));
+            tomorrowChart = nextDay.map(val => parseInt(((100 + alv) / 100 * val.price).toFixed(2)));
         }
 
         //console.log(todayChart)
+        //console.log(tomorrowChart)
         // Charttien kokoonpano
         const chartConfig = {
             backgroundGradientFrom: "#1f2131",
@@ -129,19 +189,25 @@ const HomeScreen = () => {
             useShadowColorFromDataset: false, // optional 
     
         };
-    
+        
+        // Send price data
+        //const navigation = useNavigation();
 
+        // const sendPrice = () => {
+        //     navigation.navigate("Sähköauto",{hinta: 10, id: 1})
+        // }
 
-    //console.log(week)
+    //console.log(hinta)
     //console.log(month)
+
+
 
     if (!isLoaded) {
         return (<LoadingIcon />)
     } else {
         return (
-            <View style={styles.container}>
+            <View style={styles.container}>                   
                 <View style={styles.home}>
-
                     <View style={[{ marginBottom: 20, marginTop: 20 }]}>
                         <RadioForm
                             //style={theme.radio}
@@ -149,7 +215,7 @@ const HomeScreen = () => {
                             buttonOuterSize={20}
                             radio_props={alvData}
                             initial={0}
-                            onPress={(value) => { setAlv(value) }}
+                            onPress={(value) => { setAlv(value)}}
                             buttonColor={'#D4850E'}
                             selectedButtonColor={'#D4850E'}
                             labelColor={'#a6d3d8'}
@@ -176,7 +242,6 @@ const HomeScreen = () => {
 
                         />
                     </View>
-
                     <ScrollView>
                     <View  >
                         <Grid >
@@ -224,7 +289,6 @@ const HomeScreen = () => {
                                 </View>
                             </Col>
                         </View>
-
                         <View style={{  marginTop: 30, alignItems: 'center'}}>
                             <Text style={[styles.text, {textAlign: 'center', margin: 20, fontSize: 16 }]}>Hinta tänään</Text>
                             <View>
@@ -233,15 +297,14 @@ const HomeScreen = () => {
                                             labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
                                                 "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
                                             datasets: [
-                                                { data: [1,2,3,4,5] }
-                                            ]
+                                                { data: [0,9,7,5,8] }]
                                         }}
                                         width={responsiveWidth(90)} // from react-native
                                         height={200}
                                         //yAxisLabel="€"
                                         yAxisSuffix="snt"
                                         yAxisInterval={1} // optional, defaults to 1
-                                        fromZero={true}
+                                        //fromZero={true}
                                         verticalLabelRotation={-40}
                                         chartConfig={{                       
                                             backgroundColor: "#0000",
@@ -267,15 +330,10 @@ const HomeScreen = () => {
                                         bezier
                                         style={{
                                             marginVertical: 8,
-                                            borderRadius: 16,
-                                            
-                                            
-                                            
-                                            
+                                            borderRadius: 16,    
                                         }}
                                 />
-                            </View>
-                        
+                            </View>       
                     </View>
                     <View style={{ marginTop: 30, alignItems: 'center' }}>
                          
@@ -285,9 +343,7 @@ const HomeScreen = () => {
                                     labels: ["01:00", "03:00", "05:00", "07:00", "10:00",
                                         "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
                                     datasets: [
-                                        {
-                                            data: [1,2,3,4,5]
-                                        }
+                                        { data: [0,3,5,67] /*tomorrowChart*/ }
                                     ]
                                 }}
                                 width={responsiveWidth(90)} // from react-native
@@ -295,7 +351,7 @@ const HomeScreen = () => {
                                 //yAxisLabel="€"
                                 yAxisSuffix=" snt"
                                 yAxisInterval={1} // optional, defaults to 1
-                                fromZero={true}
+                                //fromZero={true}
                                 verticalLabelRotation={-40}
                                 chartConfig={{
                                     backgroundColor: "#0000",
@@ -323,11 +379,11 @@ const HomeScreen = () => {
                                     borderRadius: 16,
                                 }}
                                 
-                            />
-                        
+                            />  
                     </View>
 
                     </ScrollView>
+                    
                 </View>
             </View>
         );
