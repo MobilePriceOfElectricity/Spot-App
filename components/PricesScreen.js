@@ -371,8 +371,8 @@ const PricesScreen = () => {
                                 alignSelf: 'center',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                //shadowColor: "#00FF00",
-                                //shadowOpacity: 5,
+                                shadowColor: "#00FF00",
+                                shadowOpacity: 5,
                                 elevation: 10,
                                 shadowRadius: 50
                             }}>
