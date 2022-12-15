@@ -29,28 +29,28 @@ import styles from "../styles/styles";
     {
       name: "% Tuulivoima",
       population: 0,
-      color: "green",
+      color: "#7DB67C",
       legendFontColor: "#7F7F7F",
       legendFontSize: 10
     },
     {
       name: "% Vesivoima",
       population: 0,
-      color: "red",
+      color: "#41859F",
       legendFontColor: "#7F7F7F",
       legendFontSize: 10
     },
     {
       name: "% Ydinvoima",
       population: 0,
-      color: "blue",
+      color: "#173F6E",
       legendFontColor: "#7F7F7F",
       legendFontSize: 10
     },
     {
-      name: "% Teollisuuden",
+      name: "% Teollisuus",
       population: 0,
-      color: "#000",
+      color: "#292B2E",
       legendFontColor: "#7F7F7F",
       legendFontSize: 10
     },
@@ -95,7 +95,7 @@ import styles from "../styles/styles";
     return ( <LoadingIcon/> )
   } else {
     return (
-      <View>
+      <View style={{backgroundColor:  `rgba(31, 33, 49, 1)`, marginBottom: -10, borderRadius: 8, marginHorizontal:8, marginTop: 15, }}>
           <PieChart
             data={PieChartData}
             width={300}
@@ -106,7 +106,9 @@ import styles from "../styles/styles";
             paddingHorizontal={"100"}
             paddingLeft={20}
             center={[1, 10]}
-            absolute 
+            absolute
+            
+            
           />
         
       </View>

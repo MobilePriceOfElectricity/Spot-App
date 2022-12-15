@@ -51,4 +51,9 @@ export default StyleSheet.create({
       color: '#a6d3d8',
 
     },
+    button: {
+      backgroundColor: '#16171D',
+      marginRight: 200,
+      borderRadius: 5
+    }
   });
