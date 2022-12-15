@@ -1,9 +1,6 @@
-import React from 'react';
+import React,{ useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import {AntDesign} from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons'; 
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons'; 
+import {AntDesign, Ionicons, MaterialCommunityIcons, FontAwesome}  from '@expo/vector-icons';
 import { PricesScreen} from './components/PricesScreen';
 import { PriceLimitsScreen } from './components/PriceLimitsScreen';
 import { AlarmsScreen } from './components/AlarmsScreen';
@@ -11,12 +8,10 @@ import { ElCarScreen } from './components/ElCarScreen';
 import { PriceListScreen } from './components/PriceListScreen';
 import { HomeScreen } from './components/HomeScreen';
 import {SettingsScreen} from './components/SettingsScreen';
-import { useFonts } from 'expo-font';
 import { DataScreen } from './components/DataScreen';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { CustomDrawer } from './components/CustomDrawer'
-import { useEffect } from 'react';
-
+import { useFonts } from 'expo-font';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 const Drawer = createDrawerNavigator();
 
 
