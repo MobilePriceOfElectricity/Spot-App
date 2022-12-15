@@ -5,6 +5,7 @@ import moment from 'moment';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { LoadingIcon } from './LoadingIcon';
 import DropDownPicker from 'react-native-dropdown-picker'
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 //import styles from '../styles/styles';
 
@@ -27,6 +28,9 @@ const PriceListScreen = ({ route, navigation}, props) => {
         { label: 'Tämä päivä', value: 'Today' },
         { label: 'Seuraava päivä (julkaistaan klo 14)', value: 'Tomorrow' },
     ]);
+
+    const [value2, setValue2] = useState();
+    const { getItem, setItem } = useAsyncStorage('@storage_key');
     //Refresh Control
     const [refreshing, setRefreshing] = React.useState(false);
 
@@ -97,7 +101,16 @@ const PriceListScreen = ({ route, navigation}, props) => {
         let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
         setHour(curDate.substring(8, 10))
         setDataToRender()
+        readItemFromStorage()
     }, [])
+
+    const readItemFromStorage = async () => {
+        const item = await getItem();
+        setValue2(item);
+        console.log(item)
+      };
+
+      
 
        // Alv arvot
        const alvData = [
@@ -108,8 +121,8 @@ const PriceListScreen = ({ route, navigation}, props) => {
     //flat list
         const Item = ({ time,price }) => (
             <View style={[
-                ((100 + alv) / 100 * price).toFixed(2) <= 30 ? styles.low : styles.item,
-                ((100 + alv) / 100 * price).toFixed(2) > 30 && ((100 + alv) / 100 * price).toFixed(2) < 50 ? styles.middle : styles.item,
+                ((100 + alv) / 100 * price).toFixed(2) <= value2 ? styles.low : styles.item,
+                ((100 + alv) / 100 * price).toFixed(2) > value2 && ((100 + alv) / 100 * price).toFixed(2) < 50 ? styles.middle : styles.item,
                 ((100 + alv) / 100 * price).toFixed(2) >= 50 ? styles.high : styles.item,
                 styles.item]}>
               <Text style={styles.title}>Klo: {time}.00 | { ((100 + alv) / 100 * price).toFixed(2)}snt/kWh</Text>

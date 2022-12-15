@@ -1,4 +1,4 @@
-import { View, Switch, Text, Button } from "react-native";
+import { View, Switch, Text, Button, TouchableOpacity } from "react-native";
 import styles from '../styles/styles';
 import React, { useState, useEffect } from "react";
 //import Slider from '@react-native-community/slider';
@@ -6,9 +6,15 @@ import React, { useState, useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
+//Async
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+
 //Liittyy fetchiin
 import { LoadingIcon } from './LoadingIcon';
 import moment from 'moment';
+import { TextInput } from "react-native-gesture-handler";
+const STORAGE_KEY = "@ala_Key";
+const STORAGE_KEY2 = "@yla_Key";
 
 
 
@@ -36,6 +42,9 @@ const SettingsScreen = () => {
   const [priceLimitUp, setPriceLimitUp] = useState(80)
   const [hour, setHour] = useState();
 
+  const [value2, setValue2] = useState('value');
+  const { getItem, setItem } = useAsyncStorage('@storage_key');
+
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   const fetchToday = () => {
@@ -58,13 +67,12 @@ const SettingsScreen = () => {
   }
 
   useEffect(() => {
-
-    
     schedulePushNotification()
     fetchToday()
     //liittyy fetchiin
     let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
     setHour(curDate.substring(8, 10))
+
   }, []);
 
 
@@ -109,13 +117,24 @@ const SettingsScreen = () => {
     */
   }
 
-  // const sendPrice = () => {
-  //   return(
-  //     <PriceListScreen joku={priceLimitDown} />
-  //   )
-  // }
-<Button title= {'click'} onPress={() => {navigation.navigate('Tuntihinnat', {alajuttu : priceLimitDown, ylajuttu: priceLimitUp})}}/>
 
+  const readItemFromStorage = async () => {
+    const item = await getItem();
+    setValue2(item);
+  };
+
+  const writeItemToStorage = async newValue => {
+    await setItem(newValue);
+    setValue2(newValue);
+  };
+
+  useEffect(() => {
+    writeItemToStorage(priceLimitDown)
+    readItemFromStorage();
+  }, []);
+
+  //console.log(value)
+  
   //Tarkista kello
   let priceNow = ''
   for (let i = 0; i < hourPrice.length; i++)
@@ -123,14 +142,13 @@ const SettingsScreen = () => {
       priceNow = ((100 + 10) / 100 * hourPrice[i].price).toFixed(2)
     }
 
-    console.log(priceNow)
-
   if (!isLoaded) {
     return (<LoadingIcon />)
   } else {
     return (
       <View style={styles.container}>
-        
+        <TextInput style={{fontSize: 20, backgroundColor: 'orange'}} placeholder="Alaraja" value={(val) => (setPriceLimitDown(val))}></TextInput>
+        <Button title='nappi' onPress={() => writeItemToStorage(priceLimitDown)}>Tallenna hintarajat</Button>
 
        
         <View style={{ marginLeft: 30 }}>

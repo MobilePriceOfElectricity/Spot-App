@@ -17,7 +17,7 @@ import styles from '../styles/styles';
 import moment from 'moment';
 
 
-const TOKEN = 'YOUR API'
+const TOKEN = 'XIplXOEruiWHEs12bayU9PGWIkzqDsfc'
 const GET_URL = 'https://202683.api.v3.go-e.io/api/status?token=';
 const POST_URL = 'https://202683.api.v3.go-e.io/api/set?token=';
 
