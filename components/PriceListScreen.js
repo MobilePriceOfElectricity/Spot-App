@@ -1,12 +1,20 @@
-import { Animated, Text, View, Dimensions, ScrollView, RefreshControl, FlatList, SafeAreaView, StyleSheet } from 'react-native';
+import React from 'react';
+import {Text, View, Dimensions, ScrollView, RefreshControl, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import moment from 'moment';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { LoadingIcon } from './LoadingIcon';
 import DropDownPicker from 'react-native-dropdown-picker'
+
 //import styles from '../styles/styles';
 
-const PriceListScreen = () => {
+//Refresh control
+const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
+
+const PriceListScreen = ({ route, navigation}, props) => {
     const [isLoaded, setIsLoaded] = useState();
     const [today, setToday] = useState([])
     const [nextDay, setNextDay] = useState([])
@@ -17,8 +25,30 @@ const PriceListScreen = () => {
     const [value, setValue] = useState(null);
     const [items, setItems] = useState([
         { label: 'Tämä päivä', value: 'Today' },
-        { label: 'Huominen', value: 'Tomorrow' },
+        { label: 'Seuraava päivä (julkaistaan klo 14)', value: 'Tomorrow' },
     ]);
+    //Refresh Control
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    //const {rajat} = route.params
+ 
+    //const [alaraja, setAlaraja] = useState('')
+    //const [ylaraja, setYlaraja] = useState('')
+
+    // let alaraja = 0
+    // let ylaraja = 0
+
+    // if(route.params.alajuttu === undefined) {
+    //     alaraja = 20
+    // } else {
+    //     alaraja = route.params.alajuttu 
+    // }
+    
+    // if(route.params.ylajuttu === undefined) {
+    //     ylaraja = 80
+    // } else {
+    //     ylaraja = route.params.ylajuttu
+    // }
 
     const fetchToday = () => {
         fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEstoeeData.php', {
@@ -59,6 +89,9 @@ const PriceListScreen = () => {
     }
 
     useEffect(() => {
+        //console.log(props.name)
+        //setAlaraja(route.params.alajuttu)
+        //setYlaraja(route.params.ylajuttu)
         fetchToday()
         fetchNextDay()
         let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
@@ -73,9 +106,12 @@ const PriceListScreen = () => {
         { label: 'Alv 0%', value: 0 }];
 
     //flat list
-   
         const Item = ({ time,price }) => (
-            <View style={styles.item}>
+            <View style={[
+                ((100 + alv) / 100 * price).toFixed(2) <= 30 ? styles.low : styles.item,
+                ((100 + alv) / 100 * price).toFixed(2) > 30 && ((100 + alv) / 100 * price).toFixed(2) < 50 ? styles.middle : styles.item,
+                ((100 + alv) / 100 * price).toFixed(2) >= 50 ? styles.high : styles.item,
+                styles.item]}>
               <Text style={styles.title}>Klo: {time}.00 | { ((100 + alv) / 100 * price).toFixed(2)}snt/kWh</Text>
             </View>
           );
@@ -84,22 +120,31 @@ const PriceListScreen = () => {
           );
    
             const setDataToRender = () => {
-                if (value === 'Today') {
-                    setData(today)
+                if (value === 'Today' || value === null) {
+                    setData(today.slice(0,25))
                 } if (value === 'Tomorrow') {
                     setData(nextDay)
                 }
             }
 
-    console.log(today)
-    console.log(nextDay)
-    console.log(value)
+        //Refresh Control
+        const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+        fetchToday()
+        fetchNextDay()
+    }, []);
+
+            //console.log(alaraja)
+            //console.log(ylaraja)
+            //console.log(route.params.alajuttu)
 
     if (!isLoaded) {
         return (<LoadingIcon />)
     } else {
     return(
         <View style={styles.home}>
+            
                         <View style={[{ marginBottom: 20, marginTop: 20 }]}>
                         <RadioForm
                             //style={theme.radio}
@@ -117,10 +162,11 @@ const PriceListScreen = () => {
 
                         />
                     </View>
+                    
                     <View>
                         <DropDownPicker
                             theme="DARK"
-                            placeholder='Tämä päivä'
+                            placeholder='Valitse päivä'
                             open={open}
                             value={value}
                             items={items}
@@ -134,13 +180,25 @@ const PriceListScreen = () => {
 
                         />
                     </View>
+                   
         <SafeAreaView style={[styles.container, {marginTop: 30}]}>
             <FlatList
+             contentContainerStyle={styles.scrollView}
+             refreshControl={
+                 <RefreshControl
+                     refreshing={refreshing}
+                     onRefresh={onRefresh}
+                     colors={["yellow", "orange", "red", "blue", "pink"]}
+                     size="large"
+                     progressBackgroundColor={"black"}
+                 />
+             }
               data={data}
               renderItem={renderItem}
               keyExtractor={item => item.time}
             />
           </SafeAreaView>
+
         </View>
     );
     
@@ -171,12 +229,12 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: "#00FF00",
-        //shadowOpacity: 5,
-        elevation: 10,
+        elevation: 15,
         shadowRadius: 50
-        
       },
+      low: {shadowColor: 'green'},
+      middle: {shadowColor: 'orange'},
+      high: {shadowColor: 'red'},
       title: {
         fontSize: 16,
         fontFamily: "MontserratRegular",

@@ -1,3 +1,4 @@
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import {AntDesign} from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons'; 
@@ -14,15 +15,19 @@ import { useFonts } from 'expo-font';
 import { DataScreen } from './components/DataScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { CustomDrawer } from './components/CustomDrawer'
+import { useEffect } from 'react';
 
 const Drawer = createDrawerNavigator();
 
-export default function DrawerNavigation(){
+
+export default function DrawerNavigation(props){
 
   let [fontsLoaded] = useFonts({
     MontserratRegular: require("./assets/fonts/Montserrat-Regular.ttf"),
     RampartOneRegular: require("./assets/fonts/RampartOne-Regular.ttf")
   })
+
+  //const [priceNow, setPriceNow] = useState()
   
   if (!fontsLoaded) {
     return null
@@ -81,12 +86,13 @@ export default function DrawerNavigation(){
         name ="Sähköauto" 
         component={ElCarScreen}
         options={{drawerIcon: () => <MaterialCommunityIcons name="car-electric" size={23} color='#a6d3d8'/>}} 
-        initialParams={{hinta: 10, id: 1}}
+        //initialParams={{hinta: 10}}
         />
         <Drawer.Screen 
         name ="Tuntihinnat" 
         component={PriceListScreen}
-        options={{drawerIcon: () => <FontAwesome name="list-ul" size={24} color='#a6d3d8' />}} 
+        options={{drawerIcon: () => <FontAwesome name="list-ul" size={24} color='#a6d3d8' />}}
+        //initialParams={{hinta: 100}} 
         />
         <Drawer.Screen 
           name="Piirakka" 

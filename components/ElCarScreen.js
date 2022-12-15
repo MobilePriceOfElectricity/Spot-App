@@ -11,15 +11,13 @@ import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-ic
 import { responsiveWidth } from "react-native-responsive-dimensions";
 import { LoadingIcon } from './LoadingIcon';
 import styles from '../styles/styles';
-//import { useRoute } from '@react-navigation/native';
 
 
 //liittyy fetchiin
 import moment from 'moment';
 
-//tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz
 
-const TOKEN = 'tpjlSFgUj0nh9xBWHj57UwmUtG5EV2Bz'
+const TOKEN = 'YOUR API'
 const GET_URL = 'https://202683.api.v3.go-e.io/api/status?token=';
 const POST_URL = 'https://202683.api.v3.go-e.io/api/set?token=';
 
@@ -50,7 +48,7 @@ const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
-const ElCarScreen = ({ route }) => {
+const ElCarScreen = (props) => {
     const [isLoaded, setIsLoaded] = useState();
     const [answer, setAnswer] = useState([]);
     const [power, setPower] = useState(0)
@@ -58,12 +56,14 @@ const ElCarScreen = ({ route }) => {
     const [priceLimit, setPriceLimit] = useState([])
     const [state, setState] = useState(null);
     const [refreshing, setRefreshing] = React.useState(false);
-    //const [priceNow, setPriceNow] = useState([])
+    //const [priceNyt, setPriceNyt] = useState('')
     //const [isOn, setisOn] = useState([])
 
 
     //liittyy fetchiin
     const [hour, setHour] = useState();
+
+
 
 
     //liittyy fetchiin
@@ -88,9 +88,9 @@ const ElCarScreen = ({ route }) => {
     }
 
     useEffect(() => {
-        //console.log(route.params.hinta)
+        // tämä toimii console.log(props.route.params.hinta)
         //console.log(route.params.id)
-        //setPrice1(props.price)
+        //setPriceNyt(props.route.params.hinta)
         fetchToday()
         getData()
         schedulePushNotification()
@@ -100,6 +100,7 @@ const ElCarScreen = ({ route }) => {
         setHour(curDate.substring(8, 10))
     }, [])
 
+    //console.log(priceNyt)
 
     // Background Task
     setStateFn = setState;

@@ -1,4 +1,4 @@
-import { View, Switch, Text, Button, TouchableOpacity } from "react-native";
+import { View, Switch, Text, Button } from "react-native";
 import styles from '../styles/styles';
 import React, { useState, useEffect } from "react";
 //import Slider from '@react-native-community/slider';
@@ -9,8 +9,8 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider'
 //Liittyy fetchiin
 import { LoadingIcon } from './LoadingIcon';
 import moment from 'moment';
-import { color } from "react-native-reanimated";
-import { ScrollView } from "react-native-gesture-handler";
+
+
 
 // notification
 Notifications.setNotificationHandler({
@@ -58,9 +58,10 @@ const SettingsScreen = () => {
   }
 
   useEffect(() => {
+
+    
     schedulePushNotification()
     fetchToday()
-
     //liittyy fetchiin
     let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
     setHour(curDate.substring(8, 10))
@@ -107,9 +108,13 @@ const SettingsScreen = () => {
 
     */
   }
-  // Käyttöehdot button
-  const [showValue, setShowValue] = useState(false);
-  const onPress = () => setShowValue(!showValue);
+
+  // const sendPrice = () => {
+  //   return(
+  //     <PriceListScreen joku={priceLimitDown} />
+  //   )
+  // }
+<Button title= {'click'} onPress={() => {navigation.navigate('Tuntihinnat', {alajuttu : priceLimitDown, ylajuttu: priceLimitUp})}}/>
 
   //Tarkista kello
   let priceNow = ''
@@ -118,17 +123,20 @@ const SettingsScreen = () => {
       priceNow = ((100 + 10) / 100 * hourPrice[i].price).toFixed(2)
     }
 
+    console.log(priceNow)
+
   if (!isLoaded) {
     return (<LoadingIcon />)
   } else {
     return (
-      
       <View style={styles.container}>
-        <ScrollView>
+        
+
+       
         <View style={{ marginLeft: 30 }}>
           <View>
-            <Text style={[styles.text,{marginTop: 20, fontSize: 18, color: '#d4850e'}]}>Salli push ilmoitukset</Text>
-            <Switch style={{alignSelf: 'flex-start'}}
+            <Text style={styles.text}>Salli push ilmoitukset</Text>
+            <Switch
               trackColor={{ false: "#767577", true: "#a6d3d8" }}
               thumbColor={isEnabled ? "orange" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
@@ -136,8 +144,7 @@ const SettingsScreen = () => {
               value={isEnabled}
             />
           </View>
-          <View><Text style={[styles.text, {fontSize: 18, marginBottom: 10, marginTop: 10, color: '#d4850e'}]}>Asettamasi hinta rajat:</Text></View>
-          <View><Text style={[styles.text, {fontSize: 18}]}>{priceLimitDown} snt/kWh - {priceLimitUp} snt/kWh</Text></View>
+          <View><Text style={styles.text}>Asettamasi hinta rajat: {priceLimitDown} snt/kWh - {priceLimitUp} snt/kWh</Text></View>
           <View style={[{ marginBottom: 20, marginTop: 20 }]}>
             <MultiSlider
               min={1}
@@ -147,9 +154,6 @@ const SettingsScreen = () => {
               //sliderLength={width}
               onValuesChange={(val) => (setPriceLimitDown(val))}
               enableLabel={false}
-              
-              
-              
 
               //customLabel={SliderCustomLabel(textTransformerTimes)}
               trackStyle={{
@@ -159,7 +163,7 @@ const SettingsScreen = () => {
               markerOffsetY={3}
               markerSize={10}
               selectedStyle={{
-                backgroundColor: "#d4850e",
+                backgroundColor: "orange",
               }}
               unselectedStyle={{
                 backgroundColor: "#a6d3d8",
@@ -173,14 +177,13 @@ const SettingsScreen = () => {
               allowOverlap
               values={[80]}
               //sliderLength={width}
-              onValuesChange={(val) => (setPriceLimitUp(val))}
+              onValuesChangeFinish={(val) => (setPriceLimitUp(val))}
               enableLabel={false}
 
               //customLabel={SliderCustomLabel(textTransformerTimes)}
               trackStyle={{
                 height: 8,
                 borderRadius: 8,
-                
               }}
               markerOffsetY={3}
               markerSize={8}
@@ -188,32 +191,22 @@ const SettingsScreen = () => {
                 backgroundColor: "#a6d3d8",
               }}
               unselectedStyle={{
-                backgroundColor: "#d4850e",
+                backgroundColor: "orange",
               }}
             />
           </View>
           <View>
-            
-            <Text style={[styles.text,{fontSize: 18, color:'#d4850e'}]}>Datan lähteet: </Text>
-            <Text style={[styles.text,{fontSize: 18}]}>Fingrid & ENTSO-E</Text>
-            <Text style={[styles.text,{fontSize: 18, marginTop: 20, color: '#d4850e'}]}>Tietosuoja:</Text>
-            <Text style={[styles.text,{fontSize: 18,marginBottom: 20}]}>Sovellus ei kerää käyttäjästä mitään henkilökohtaista dataa, ainoa kerättävä data on käyttäjän syöttämät kodinkoneet ja niiden kwh arvot.</Text>
-            
-              <TouchableOpacity
-                onPress={onPress}
-                style={styles.button}
-                >
-                <Text style={[styles.text, {color: '#d4850e', fontSize: 18}]}>
-                  Käyttöehdot
-                </Text>
-              </TouchableOpacity>
-            {showValue?<Text style={[styles.text,{marginTop:20, marginBottom: 30}]}>Sovelluksen tekijät eivät vastaa hintatietojen oikeellisuudesta,
+            <Text style={styles.text}>Tietoja</Text>
+            <Text style={styles.text}>Datan lähteet: </Text>
+            <Text style={styles.text}>Fingrid & ENTSO-E:</Text>
+            <Text style={styles.text}>Tietosuoja:</Text>
+            <Text style={styles.text}>Sovellus ei kerää käyttäjästä mitään henkilökohtaista dataa, ainoa kerättävä data on käyttäjän syöttämät kodinkoneet ja niiden kwh arvot.</Text>
+            <Text style={styles.text}>Käyttöehdot:</Text>
+            <Text style={styles.text}>Sovelluksen tekijät eivät vastaa hintatietojen oikeellisuudesta,
               sillä data saadaan kolmannelta osapuolelta. Jatkuvaa toimivuutta ei tämän takia voida sovellukselle taata.
-              Käyttäjä vastaa itse syöttämistään arvoista ja niissä olevista virheistä ei sovelluksen kehittäjät vastaa. Laskukaavat antavat joka tapauksessa viitteellisen arvion.  </Text> : null}</View>
+              Käyttäjä vastaa itse syöttämistään arvoista ja niissä olevista virheistä ei sovelluksen kehittäjät vastaa. Laskukaavat antavat joka tapauksessa viitteellisen arvion.  </Text></View>
         </View>
-        </ScrollView>
       </View>
-      
     );
   }
 }
