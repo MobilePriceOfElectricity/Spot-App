@@ -263,6 +263,7 @@ const HomeScreen = ({navigation}) => {
                                         borderRadius: 16,
                                         shadowColor: "#a6d3d8",
                                         elevation: 5,
+                                        marginHorizontal: 10
                                     }}
                                 />
                             </Col>

@@ -1,9 +1,12 @@
-import { StyleSheet, View, Dimensions, Button} from 'react-native';
+import { StyleSheet, View, Dimensions, Button, Text} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   LineChart,
 } from "react-native-chart-kit";
 import {LoadingIcon} from './LoadingIcon';
+import { responsiveWidth } from "react-native-responsive-dimensions";
+import { Entypo } from '@expo/vector-icons';
+
 
 
 export function ProductionCfTemp() {
@@ -13,18 +16,18 @@ export function ProductionCfTemp() {
  const [isLoaded, setIsLoaded] = useState();
 
    let Year = [
-    "tammikuu", 
-    "helmikuu",
-    "maaliskuu",
-    "huhtikuu",
-    "toukokuu",
-    "kesäkuu",
-    "heinäkuu",
-    "elokuu",
-    "syyskuu",
-    "lokakuu",
-    "marraskuu",
-    "joulukuu"  
+    "tammi", 
+    "helmi",
+    "maalis",
+    "huhti",
+    "touko",
+    "kesä",
+    "heinä",
+    "elo",
+    "syys",
+    "loka",
+    "marras",
+    "joulu"  
   ]
 
   const d = new Date();
@@ -73,9 +76,18 @@ export function ProductionCfTemp() {
     return ( <LoadingIcon/>)
   } else {
   return (
-        <View>
-          <Button title="Kuluva vuosi" onPress={() => setTimeFrame(Year)}></Button>
-          <Button title="Viimeiset kuusi kuukautta" onPress={() => setTimeFrame(halfYear)}></Button>
+        <View style={{  marginTop: 10}}>
+          <View style={[styles.buttonContainer, {marginBottom: 10}]}>
+            <Button title="Kuluva vuosi" color="#16171D"  onPress={() => setTimeFrame(Year)}></Button>
+          </View>
+        <View style={[styles.buttonContainer, {marginBottom: 10}]}>
+          <Button title="Viimeiset kuusi kuukautta" color="#16171D" onPress={() => setTimeFrame(halfYear)}></Button>
+        </View>
+        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+          <Text style={[styles.text, {marginTop: 15}]}>
+            Kulutus verrattuna lämpötilaan
+          </Text>
+        </View>
           <LineChart
             data={{
               labels: timeFrame,
@@ -93,36 +105,58 @@ export function ProductionCfTemp() {
               ]
             }}
 
-            width={Dimensions.get("window").width}
+            width={responsiveWidth(90)}
             height={220}
-            yAxisLabel=""
-            yAxisSuffix="GW/h / C"
+            //yAxisLabel=""
+            //yAxisSuffix="GW/h / C"
             yAxisInterval={1}
+            verticalLabelRotation={-30}
+            //withDots={false}
+            withShadow={true}
+            segments={4}
+            yLabelsOffset='50'
+            //withHorizontalLabels={true}
+            
+            
+            
             chartConfig={{
-              backgroundColor: "#e26a00",
-              backgroundGradientFrom: "#fb8c00",
-              backgroundGradientTo: "#ffa726",
+              backgroundColor: "#1f2131",
+              backgroundGradientFrom: "#1f2131",
+              backgroundGradientTo: "#1f2131",
               decimalPlaces: 0,
+              
               color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
-                borderRadius: 16
-              },
+              
               propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726"
-              }
+                r: "4",
+                strokeWidth: "1.5",
+                stroke: "#1f2131"
+              },
+              propsForLabels: {
+                fontSize: 10,
+                
+            },
             }}
             bezier
             style={{
               marginTop: 0,
-              paddingHorizontal: 1,
+              paddingHorizontal: 0,
               marginVertical: 8,
-              borderRadius: 16
+              borderRadius: 8,
+              marginTop: 10,
+              paddingRight: 10,
+              paddingLeft: 10
             }}
           />
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <Entypo name="dot-single" size={24} color="#d4850e" />
+            <Text style={styles.text}>Celcius</Text>
+            <Entypo name="dot-single" size={24} color="white" />
+            <Text style={styles.text}>GW/h</Text>
+          </View>  
         </View>
+        
       );
     }
   }
@@ -139,6 +173,11 @@ export function ProductionCfTemp() {
         alignSelf: 'center',
         width: "1%",
         marginTop: 350
+      },
+      text: {
+        color: '#a6d3d8',
+        fontFamily: "MontserratRegular"
       },  
+      
     });
     
