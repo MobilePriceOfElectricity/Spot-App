@@ -12,12 +12,10 @@ import { responsiveWidth } from "react-native-responsive-dimensions";
 import { LoadingIcon } from './LoadingIcon';
 import styles from '../styles/styles';
 
-
 //liittyy fetchiin
 import moment from 'moment';
 
-
-const TOKEN = 'XIplXOEruiWHEs12bayU9PGWIkzqDsfc'
+const TOKEN = 'YOUR API'
 const GET_URL = 'https://202683.api.v3.go-e.io/api/status?token=';
 const POST_URL = 'https://202683.api.v3.go-e.io/api/set?token=';
 
@@ -56,17 +54,10 @@ const ElCarScreen = (props) => {
     const [priceLimit, setPriceLimit] = useState([])
     const [state, setState] = useState(null);
     const [refreshing, setRefreshing] = React.useState(false);
-    //const [priceNyt, setPriceNyt] = useState('')
-    //const [isOn, setisOn] = useState([])
-
 
     //liittyy fetchiin
     const [hour, setHour] = useState();
 
-
-
-
-    //liittyy fetchiin
     //Fetch price
     const fetchToday = () => {
         fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEstoeeData.php', {
@@ -88,9 +79,6 @@ const ElCarScreen = (props) => {
     }
 
     useEffect(() => {
-        // tämä toimii console.log(props.route.params.hinta)
-        //console.log(route.params.id)
-        //setPriceNyt(props.route.params.hinta)
         fetchToday()
         getData()
         schedulePushNotification()
@@ -99,8 +87,6 @@ const ElCarScreen = (props) => {
         let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
         setHour(curDate.substring(8, 10))
     }, [])
-
-    //console.log(priceNyt)
 
     // Background Task
     setStateFn = setState;
@@ -163,9 +149,6 @@ const ElCarScreen = (props) => {
                 priceNow = ((100 + 10) / 100 * hourPrice[i].price).toFixed(2)
             }
 
-    //console.log(priceNow)
-
-
     //Power slider
     const min = 6;
     const max = 16;
@@ -201,15 +184,6 @@ const ElCarScreen = (props) => {
 
         }
     }
-
-    //Tässä on pelkkä props
-    //console.log(props.price)
-
-    //Tässä asyncStorageen tallennettu props
-    //console.log(priceNow)
-
-    // Tässä sliderin value
-    //console.log(price)
 
     //Refresh Control
     const onRefresh = React.useCallback(() => {
@@ -293,15 +267,6 @@ const ElCarScreen = (props) => {
             // lataus valmis
         }
     }
-
-    //const route = useRoute();
-
-    //console.log(route.params.price)
-
-    //const {pricenytte, ID} = route.params
-    //const { hinta, id } = route.params;
-
-    //console.log(route.params.hinta)
 
 
     if (!isLoaded) {

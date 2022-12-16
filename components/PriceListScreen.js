@@ -5,17 +5,18 @@ import moment from 'moment';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { LoadingIcon } from './LoadingIcon';
 import DropDownPicker from 'react-native-dropdown-picker'
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //import styles from '../styles/styles';
+const STORAGE_KEY = "@Down_Key";
+const STORAGE_KEY2 = "@Up_Key";
 
 //Refresh control
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
-
-const PriceListScreen = ({ route, navigation}, props) => {
+const PriceListScreen = () => {
     const [isLoaded, setIsLoaded] = useState();
     const [today, setToday] = useState([])
     const [nextDay, setNextDay] = useState([])
@@ -29,30 +30,11 @@ const PriceListScreen = ({ route, navigation}, props) => {
         { label: 'Seuraava päivä (julkaistaan klo 14)', value: 'Tomorrow' },
     ]);
 
-    const [value2, setValue2] = useState();
-    const { getItem, setItem } = useAsyncStorage('@storage_key');
     //Refresh Control
     const [refreshing, setRefreshing] = React.useState(false);
-
-    //const {rajat} = route.params
  
-    //const [alaraja, setAlaraja] = useState('')
-    //const [ylaraja, setYlaraja] = useState('')
-
-    // let alaraja = 0
-    // let ylaraja = 0
-
-    // if(route.params.alajuttu === undefined) {
-    //     alaraja = 20
-    // } else {
-    //     alaraja = route.params.alajuttu 
-    // }
-    
-    // if(route.params.ylajuttu === undefined) {
-    //     ylaraja = 80
-    // } else {
-    //     ylaraja = route.params.ylajuttu
-    // }
+    const [downLimit, setDownLimit] = useState('')
+    const [upLimit, setUpLimit] = useState('')
 
     const fetchToday = () => {
         fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/GetEstoeeData.php', {
@@ -93,24 +75,14 @@ const PriceListScreen = ({ route, navigation}, props) => {
     }
 
     useEffect(() => {
-        //console.log(props.name)
-        //setAlaraja(route.params.alajuttu)
-        //setYlaraja(route.params.ylajuttu)
         fetchToday()
         fetchNextDay()
         let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
         setHour(curDate.substring(8, 10))
         setDataToRender()
-        readItemFromStorage()
+        getValueFunction()
+        getUpValueFunction()
     }, [])
-
-    const readItemFromStorage = async () => {
-        const item = await getItem();
-        setValue2(item);
-        console.log(item)
-      };
-
-      
 
        // Alv arvot
        const alvData = [
@@ -121,9 +93,9 @@ const PriceListScreen = ({ route, navigation}, props) => {
     //flat list
         const Item = ({ time,price }) => (
             <View style={[
-                ((100 + alv) / 100 * price).toFixed(2) <= value2 ? styles.low : styles.item,
-                ((100 + alv) / 100 * price).toFixed(2) > value2 && ((100 + alv) / 100 * price).toFixed(2) < 50 ? styles.middle : styles.item,
-                ((100 + alv) / 100 * price).toFixed(2) >= 50 ? styles.high : styles.item,
+                ((100 + alv) / 100 * price).toFixed(2) <= downLimit ? styles.low : styles.item,
+                ((100 + alv) / 100 * price).toFixed(2) > downLimit && ((100 + alv) / 100 * price).toFixed(2) < upLimit ? styles.middle : styles.item,
+                ((100 + alv) / 100 * price).toFixed(2) >= upLimit ? styles.high : styles.item,
                 styles.item]}>
               <Text style={styles.title}>Klo: {time}.00 | { ((100 + alv) / 100 * price).toFixed(2)}snt/kWh</Text>
             </View>
@@ -146,11 +118,23 @@ const PriceListScreen = ({ route, navigation}, props) => {
         wait(2000).then(() => setRefreshing(false));
         fetchToday()
         fetchNextDay()
+        getValueFunction()
+        getUpValueFunction()
     }, []);
 
-            //console.log(alaraja)
-            //console.log(ylaraja)
-            //console.log(route.params.alajuttu)
+    const getValueFunction = () => {
+        AsyncStorage.getItem(STORAGE_KEY).then(
+          (value) =>
+            setDownLimit(value)
+        );
+      };
+    
+      const getUpValueFunction = () => {
+        AsyncStorage.getItem(STORAGE_KEY2).then(
+          (value) =>
+            setUpLimit(value)
+        );
+      };
 
     if (!isLoaded) {
         return (<LoadingIcon />)
@@ -175,7 +159,6 @@ const PriceListScreen = ({ route, navigation}, props) => {
 
                         />
                     </View>
-                    
                     <View>
                         <DropDownPicker
                             theme="DARK"
@@ -190,10 +173,8 @@ const PriceListScreen = ({ route, navigation}, props) => {
                             containerStyle={{ height: 30 }}
                             onChangeItem={item => setValue(item.value)}
                             onChangeValue={val => setDataToRender(val)}
-
                         />
-                    </View>
-                   
+                    </View>         
         <SafeAreaView style={[styles.container, {marginTop: 30}]}>
             <FlatList
              contentContainerStyle={styles.scrollView}
@@ -211,12 +192,9 @@ const PriceListScreen = ({ route, navigation}, props) => {
               keyExtractor={item => item.time}
             />
           </SafeAreaView>
-
         </View>
     );
-    
 }
-
 }
 
 export {PriceListScreen}
@@ -252,7 +230,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: "MontserratRegular",
         color: '#a6d3d8',
-  
     },
     normal: {
         color: 'red'
