@@ -1,32 +1,33 @@
-import React from 'react';
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import AppliancesScreen from "./AppliancesScreen";
-import AddScreen from './AddScreen';
+import React, {useEffect, useState} from 'react';
+import Home from './AppliancesScreen'
+import {Container} from "../styles/appStyles"
 
-const OwnInfo = () => {
+//async storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export default function OwnInfo() {
     
-    const Stack = createNativeStackNavigator();
-    return (
+  const initialAppliances = []
 
-        <Stack.Navigator initilRouterName="Home">
-        <Stack.Screen
-          name="Home"
-          component={AppliancesScreen}
-          options={{
-            title:"Omat kodinkoneet",
-            HeaderTitle: "Home",
-          }} 
-          />
-         <Stack.Screen
-          name="Add"
-          component={AddScreen}
-          options={{
-            title:"Lisää kodinkone",
-            HeaderTitle: "Add",
-          }} 
-          />
-        </Stack.Navigator>
-    );
+  const [appliances,setAppliances] = useState(initialAppliances);
+
+  const loadAppliances = () => {
+    AsyncStorage.getItem("storedAppliances").then(data => {
+      if(data !== null) {
+        setAppliances(JSON.parse(data))
+      }
+      
+    }).catch((error) => console.log("error"));
   }
-  
+
+  useEffect(() => {
+    loadAppliances();
+  })
+
+  return (
+    <Container>
+      <Home appliances={appliances} setAppliances={setAppliances}/>
+    </Container>
+  );
+}
 export {OwnInfo}

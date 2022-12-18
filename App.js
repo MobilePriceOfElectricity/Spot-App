@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import {AntDesign, Ionicons, MaterialCommunityIcons, FontAwesome}  from '@expo/vector-icons';
 import { PricesScreen} from './components/PricesScreen';
 import { PriceLimitsScreen } from './components/PriceLimitsScreen';
-import { AlarmsScreen } from './components/AlarmsScreen';
+import { OwnInfo } from './components/OwnInfo';
 import { ElCarScreen } from './components/ElCarScreen';
 import { PriceListScreen } from './components/PriceListScreen';
 import { HomeScreen } from './components/HomeScreen';
@@ -66,15 +66,10 @@ export default function DrawerNavigation(props){
         options={{drawerIcon: () => <AntDesign name="linechart" size={23} color='#a6d3d8'/>}}
         
         />
-        <Drawer.Screen 
-        name ="Hintarajat" 
-        component={PriceLimitsScreen}
-        options={{drawerIcon: () => <FontAwesome name="sliders" size={23} color='#a6d3d8'/>}} 
-        />
         
         <Drawer.Screen 
-        name ="Hälytykset" 
-        component={AlarmsScreen}
+        name ="Omat kodinkoneet" 
+        component={OwnInfo}
         options={{drawerIcon: () => <AntDesign name="notification" size={23} color='#a6d3d8'/>}} 
         />
         <Drawer.Screen 
