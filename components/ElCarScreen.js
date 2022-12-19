@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Col, Grid, Row } from "react-native-easy-grid";
@@ -12,7 +12,7 @@ import { responsiveWidth } from "react-native-responsive-dimensions";
 import { LoadingIcon } from './LoadingIcon';
 import styles from '../styles/styles';
 
-//liittyy fetchiin
+//Fetch
 import moment from 'moment';
 
 const TOKEN = 'YOUR API'
@@ -32,7 +32,6 @@ Notifications.setNotificationHandler({
         shouldSetBadge: true,
     }),
 });
-
 
 export async function allowsNotificationsAsync() {
     const settings = await Notifications.getPermissionsAsync();
@@ -140,14 +139,13 @@ const ElCarScreen = (props) => {
         initBackgroundFetch(GetCharge, getData, 5);
     }
 
-
-    //Liittyy fetchiin
-        //Tarkista kello
-        let priceNow = ''
-        for (let i = 0; i < hourPrice.length; i++)
-            if (hour === hourPrice[i].time) {
-                priceNow = ((100 + 10) / 100 * hourPrice[i].price).toFixed(2)
-            }
+    //Fetch
+    //Check time
+    let priceNow = ''
+    for (let i = 0; i < hourPrice.length; i++)
+        if (hour === hourPrice[i].time) {
+            priceNow = ((100 + 10) / 100 * hourPrice[i].price).toFixed(2)
+        }
 
     //Power slider
     const min = 6;
@@ -205,7 +203,7 @@ const ElCarScreen = (props) => {
                 .then(response => {
                     response.json()
                         .then(data => {
-                            //console.log('ok', data)
+                            console.log('ok', data)
                         });
                 })
         }
@@ -224,7 +222,7 @@ const ElCarScreen = (props) => {
                 .then(response => {
                     response.json()
                         .then(data => {
-                            //console.log('ok', data)
+                            console.log('ok', data)
                         });
                 })
         }
@@ -268,219 +266,226 @@ const ElCarScreen = (props) => {
         }
     }
 
+    // Energyinfo button
+    const [showValue, setShowValue] = useState(false);
+    const onPress = () => setShowValue(!showValue);
+
 
     if (!isLoaded) {
         return (<LoadingIcon />)
     } else {
-    return (
-        <View style={styles.container}>
-            <View style={responsiveWidth(90)}>
-                <ScrollView style={[{ marginBottom: 20, marginTop: 20 }]}
-                    contentContainerStyle={styles.scrollView}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                            colors={["yellow", "orange", "red", "blue", "pink"]}
-                            size="large"
-                            progressBackgroundColor={"black"}
-                        />
-                    }
-                >
-                    <Text style={[styles.text, {
-                        marginBottom: 0, fontSize: 20, fontWeight: '700', letterSpacing: 2, textAlign: 'center'
-                    }]}>{answer.name}</Text>
-                    <View>
-                        <View style={styles.home}>
-                            <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50 }}>
-                                <View style={{
-                                    width: 155,
-                                    height: 155,
-                                    backgroundColor: 'black',
-                                    borderRadius: 100,
-                                    //paddingHorizontal: 40,
-                                    alignSelf: 'center',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    shadowColor: "orange",
-                                    //shadowOpacity: 5,
-                                    elevation: 30,
-                                    shadowRadius: 50
-                                }}>
-                                    <Text style={styles.text}>{StatusIcon()}</Text>
-                                </View>
-                            </Col>
-                        </View>
-                        <Grid>
-                        <Text style={[styles.text, { textAlign: 'center', fontSize: 18, marginBottom: 20 }]}>Latausvirta {power}A</Text>
-                            <Row style={styles.row}>
-                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'right', marginBottom: 10 }]}>{min}A</Text></Col>
-                                <Col size={70}>
-                                    <Slider
-                                        style={{transform: [{ scaleY: 2 }] }}
-                                        minimumValue={min}
-                                        maximumValue={max}
-                                        step={1}
-                                        value={valueAmp}
-                                        onValueChange={(val) => (setPower(val), PostPower())}
-                                        minimumTrackTintColor="orange"
-                                        maximumTrackTintColor="#a6d3d8"
-                                        thumbTintColor='#a6d3d8'
-                                    />
+        return (
+            <View style={styles.container}>
+                <View style={responsiveWidth(90)}>
+                    <ScrollView style={[{ marginBottom: 20, marginTop: 20 }]}
+                        contentContainerStyle={styles.scrollView}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                colors={["yellow", "orange", "red", "blue", "pink"]}
+                                size="large"
+                                progressBackgroundColor={"black"}
+                            />
+                        }
+                    >
+                        <Text style={[styles.text, {
+                            marginBottom: 0, fontSize: 20, fontWeight: '700', letterSpacing: 2, textAlign: 'center'
+                        }]}>{answer.name}</Text>
+                        <View>
+                            <View style={styles.home}>
+                                <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50 }}>
+                                    <View style={{
+                                        width: 155,
+                                        height: 155,
+                                        backgroundColor: 'black',
+                                        borderRadius: 100,
+                                        alignSelf: 'center',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        shadowColor: "orange",
+                                        elevation: 30,
+                                        shadowRadius: 50
+                                    }}>
+                                        <Text style={styles.text}>{StatusIcon()}</Text>
+                                    </View>
                                 </Col>
-                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'left' }]}>{max}A</Text></Col>
+                            </View>
+                            <Grid>
+                                <Text style={[styles.text, { textAlign: 'center', fontSize: 18, marginBottom: 20 }]}>Latausvirta {power}A</Text>
+                                <Row style={styles.row}>
+                                    <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'right', marginBottom: 10 }]}>{min}A</Text></Col>
+                                    <Col size={70}>
+                                        <Slider
+                                            style={{ transform: [{ scaleY: 2 }] }}
+                                            minimumValue={min}
+                                            maximumValue={max}
+                                            step={1}
+                                            value={valueAmp}
+                                            onValueChange={(val) => (setPower(val), PostPower())}
+                                            minimumTrackTintColor="orange"
+                                            maximumTrackTintColor="#a6d3d8"
+                                            thumbTintColor='#a6d3d8'
+                                        />
+                                    </Col>
+                                    <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'left' }]}>{max}A</Text></Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <View style={styles.home}>
+
+                                            <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50, marginLeft: 50 }}>
+                                                <View style={{
+                                                    width: 80,
+                                                    height: 80,
+                                                    marginBottom: 10,
+                                                    backgroundColor: 'black',
+                                                    borderRadius: 100,
+                                                    alignSelf: 'center',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    shadowColor: "orange",
+                                                    elevation: 10,
+                                                    shadowRadius: 50
+                                                }}>
+                                                    <Text style={[styles.text, { textAlign: 'center', fontSize: 16 }]}>{(priceNow * 0.01).toFixed(2)} €</Text>
+                                                </View>
+                                                <MaterialCommunityIcons name="home-lightning-bolt-outline" size={24} color="#a6d3d8" />
+                                            </Col>
+                                        </View>
+                                    </Col>
+                                    <Col>
+                                        <View style={styles.home}>
+                                            <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50, marginRight: 50 }}>
+                                                <View style={{
+                                                    width: 80,
+                                                    height: 80,
+                                                    marginBottom: 10,
+                                                    backgroundColor: 'black',
+                                                    borderRadius: 100,
+                                                    alignSelf: 'center',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    shadowColor: "orange",
+                                                    elevation: 10,
+                                                    shadowRadius: 50
+                                                }}>
+                                                    <Text style={[styles.text, { textAlign: 'center', fontSize: 16 }]}>{(priceLimit * 0.01).toFixed(2)} €</Text>
+                                                </View>
+                                                <MaterialIcons name="notifications-on" size={24} color="#a6d3d8" />
+                                            </Col>
+                                        </View>
+                                    </Col>
+                                </Row>
+                                <Text style={[styles.text, { textAlign: 'center', fontSize: 18, marginBottom: 20 }]}>Aseta hinta varoitus</Text>
+                                <Row style={styles.row}>
+                                    <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'right' }]}>{eurMin} snt/kWh</Text></Col>
+                                    <Col size={70}>
+                                        <Slider
+                                            style={{ transform: [{ scaleY: 2 }] }}
+                                            minimumValue={eurMin}
+                                            maximumValue={eurMax}
+                                            step={5}
+                                            value={valuePrice}
+                                            onValueChange={(val) => (setPriceLimit(val), PostPrice())}
+                                            minimumTrackTintColor="orange"
+                                            maximumTrackTintColor="#a6d3d8"
+                                            thumbTintColor='#a6d3d8'
+                                        />
+                                    </Col>
+                                    <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'left' }]}>{eurMax}snt/kWh</Text></Col>
+                                </Row>
+                            </Grid>
+                        </View>
+
+
+                        <Grid>
+                            <Row>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 20, marginTop: 20, marginBottom: 10, textAlign: 'center' }]}>Lataus info: </Text>
+                                </Col>
+
                             </Row>
                             <Row>
                                 <Col>
-                                    <View style={styles.home}>
-                                       
-                                        <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50, marginLeft:50 }}>
-                                            <View style={{
-                                                width: 80,
-                                                height: 80,
-                                                marginBottom:10,
-                                                backgroundColor: 'black',
-                                                borderRadius: 100,
-                                                //paddingHorizontal: 40,
-                                                alignSelf: 'center',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                shadowColor: "orange",
-                                                //shadowOpacity: 5,
-                                                elevation: 30,
-                                                shadowRadius: 50
-                                            }}>
-                                                <Text style={[styles.text, { textAlign: 'center', fontSize: 16 }]}>{(priceNow * 0.01).toFixed(2)} €</Text>
-                                            </View>
-                                            <MaterialCommunityIcons name="home-lightning-bolt-outline" size={24} color="#a6d3d8" />
-                                        </Col>
-                                    </View>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>{answer.Vol1}V</Text>
                                 </Col>
                                 <Col>
-                                    <View style={styles.home}>
-                                        <Col style={{ alignItems: 'center', marginTop: 30, marginBottom: 50, marginRight:50 }}>
-                                            <View style={{
-                                                width: 80,
-                                                height: 80,
-                                                marginBottom:10,
-                                                backgroundColor: 'black',
-                                                borderRadius: 100,
-                                                //paddingHorizontal: 40,
-                                                alignSelf: 'center',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                shadowColor: "orange",
-                                                //shadowOpacity: 5,
-                                                elevation: 30,
-                                                shadowRadius: 50
-                                            }}>
-                                                <Text style={[styles.text, { textAlign: 'center', fontSize: 16}]}>{(priceLimit * 0.01).toFixed(2)} €</Text>
-                                            </View>
-                                            <MaterialIcons name="notifications-on" size={24} color="#a6d3d8" />
-                                        </Col>
-                                    </View>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 30 }]}>{answer.Vol2}V</Text>
+                                </Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 30 }]}>{answer.Vol3}V</Text>
                                 </Col>
                             </Row>
-                            <Text style={[styles.text, { textAlign: 'center', fontSize: 18, marginBottom: 20 }]}>Aseta hinta varoitus</Text>
-                            <Row style={styles.row}>
-                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'right' }]}>{eurMin} snt/kWh</Text></Col>
-                                <Col size={70}>
-                                    <Slider
-                                        style={{transform: [{ scaleY: 2 }] }}
-                                        minimumValue={eurMin}
-                                        maximumValue={eurMax}
-                                        step={5}
-                                        value={valuePrice}
-                                        onValueChange={(val) => (setPriceLimit(val), PostPrice())}
-                                        minimumTrackTintColor="orange"
-                                        maximumTrackTintColor="#a6d3d8"
-                                        thumbTintColor='#a6d3d8'
-                                    />
+                            <Row>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>{answer.CurAmp1}A</Text>
                                 </Col>
-                                <Col size={15}><Text style={[styles.text, { fontSize: 12, textAlign: 'left'  }]}>{eurMax}snt/kWh</Text></Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 30 }]}>{answer.CurAmp2}A</Text>
+                                </Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 30 }]}>{answer.CurAmp3}A</Text>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>{answer.CurkW1}kW</Text>
+                                </Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 30 }]}>{answer.CurkW2}kW</Text>
+                                </Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft: 30 }]}>{answer.CurkW3}kW</Text>
+                                </Col>
                             </Row>
                         </Grid>
-                    </View>
 
+                        <Grid style={[styles.text, { marginTop: 20, marginBottom: 50 }]}>
+                            <Row>
+                                <Col>
+                                    <TouchableOpacity
+                                        onPress={onPress}
 
-                    <Grid>
-                        <Row>
-                            <Col>
-                            <Text style={[styles.text, { fontSize: 20, marginTop: 20, marginBottom:10, textAlign: 'center'}]}>Lataus info: </Text>
-                            </Col>
-                        
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{answer.Vol1}V</Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.Vol2}V</Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.Vol3}V</Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{answer.CurAmp1}A</Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurAmp2}A</Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurAmp3}A</Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{answer.CurkW1}kW</Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurkW2}kW</Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:30 }]}>{answer.CurkW3}kW</Text>
-                            </Col>
-                        </Row>
-                    </Grid>
+                                    >
+                                        <Text style={[styles.text, { fontSize: 20, marginBottom: 10, textAlign: 'center', alignSelf: 'center', justifyContent: 'center' }]}>Energia tiedot: </Text>
+                                    </TouchableOpacity>
+                                </Col>
 
-                    <Grid style={[styles.text, {marginTop:20, marginBottom:50 }]}>
-                        <Row>
-                            <Col>
-                            <Text style={[styles.text, { fontSize: 20, marginBottom:10, textAlign: 'center' }]}>Energia tiedot: </Text>
-                            </Col>
-    
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Energia nyt: </Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyNow * 0.001).toFixed(2)}kW</Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Tällä latauksella: </Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyThisCharge * 0.001).toFixed(2)}kW</Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Yhteensä: </Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyTotal * 0.001).toFixed(2)}kW</Text>
-                            </Col>
-                        </Row>
-                    </Grid>
-                </ScrollView>
+                            </Row>
+                            {showValue ?
+                                <View>
+                                    <Row>
+                                        <Col>
+                                            <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>Energia nyt: </Text>
+                                        </Col>
+                                        <Col>
+                                            <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>{(energyNow * 0.001).toFixed(2)}kW</Text>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>Tällä latauksella: </Text>
+                                        </Col>
+                                        <Col>
+                                            <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>{(energyThisCharge * 0.001).toFixed(2)}kW</Text>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>Yhteensä: </Text>
+                                        </Col>
+                                        <Col>
+                                            <Text style={[styles.text, { fontSize: 16, marginLeft: 50 }]}>{(energyTotal * 0.001).toFixed(2)}kW</Text>
+                                        </Col>
+                                    </Row>
+                                </View>
+                                : null}
+                        </Grid>
+                    </ScrollView>
+                </View>
             </View>
-        </View>
-    );
-}
+        );
+    }
 }
 export { ElCarScreen }

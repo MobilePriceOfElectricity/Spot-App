@@ -1,22 +1,19 @@
 import { View, Switch, Text, Button, TouchableOpacity, RefreshControl } from "react-native";
 import styles from '../styles/styles';
 import React, { useState, useEffect } from "react";
-//import Slider from '@react-native-community/slider';
-//import * as TaskManager from 'expo-task-manager';
 import * as Notifications from "expo-notifications";
-//import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
-//Liittyy fetchiin
+//fetch
 import { LoadingIcon } from './LoadingIcon';
 import moment from 'moment';
 import { ScrollView, TextInput } from "react-native-gesture-handler";
-// import AsyncStorage
+//import AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = "@Down_Key";
 const STORAGE_KEY2 = "@Up_Key";
 
-// notification
+//notification
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
