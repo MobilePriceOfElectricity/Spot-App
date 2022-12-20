@@ -51,9 +51,12 @@ export default StyleSheet.create({
       color: '#a6d3d8',
 
     },
-    button: {
+    buttoni: {
       backgroundColor: '#16171D',
-      marginRight: 200,
-      borderRadius: 5
-    }
+      alignSelf: "center",
+      borderRadius: 5,
+    },
+    input: {
+      color: '#d0ece7',
+    },
   });

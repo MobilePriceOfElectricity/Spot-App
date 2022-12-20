@@ -16,7 +16,7 @@ const Header = ({handleClearAppliances}) =>  {
         <HeaderTitle>Kodinkoneet</HeaderTitle>
         <HeaderButton
         onPress={handleClearAppliances}>
-            <MaterialCommunityIcons name = "trash-can-outline" size={25} color={colors.tertiary} />
+            <MaterialCommunityIcons name = "trash-can-outline" size={25} color={colors.alternative} />
         </HeaderButton>
       </HeaderView>
     )

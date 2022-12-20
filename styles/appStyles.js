@@ -6,7 +6,7 @@ import Constants from "expo-constants";
 export const colors = {
   primary: "#16171d",
   secondary: "#1f2131",
-  tertiary: "#d0ece7",
+  tertiary: "#a6d3d8",
   alternative: "#d4850e",
 };
 

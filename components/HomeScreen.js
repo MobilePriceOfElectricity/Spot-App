@@ -234,7 +234,7 @@ const HomeScreen = () => {
 
                         />
                     </View>
-                    <View>
+                    <View style={{marginHorizontal: 8}}>
                         <DropDownPicker
 
                             theme="DARK"

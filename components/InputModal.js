@@ -65,7 +65,7 @@ appliances}) => {
 
                     <StyledInput 
                         placeholder="Kodinkone"
-                        placeholderTextColor ={colors.alternative}
+                        placeholderTextColor ={colors.primary}
                         selectionColor = {colors.secondary}
                         autoFocus={true}
                         onChangeText={(text) => setApplianceInputValue(text)}
@@ -75,7 +75,7 @@ appliances}) => {
                     />
                     <StyledInput 
                         placeholder="kWh"
-                        placeholderTextColor ={colors.alternative}
+                        placeholderTextColor ={colors.primary}
                         selectionColor = {colors.secondary}
                         autoFocus={true}
                         keyboardType='numeric'

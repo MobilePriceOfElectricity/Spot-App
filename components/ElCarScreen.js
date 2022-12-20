@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity,  RefreshControl } from 'react-native';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Col, Grid, Row } from "react-native-easy-grid";
@@ -268,6 +268,10 @@ const ElCarScreen = (props) => {
         }
     }
 
+     // Energiatiedot button
+  const [showValue, setShowValue] = useState(false);
+  const onPress = () => setShowValue(!showValue);
+
 
     if (!isLoaded) {
         return (<LoadingIcon />)
@@ -347,7 +351,7 @@ const ElCarScreen = (props) => {
                                                 justifyContent: 'center',
                                                 shadowColor: "orange",
                                                 //shadowOpacity: 5,
-                                                elevation: 30,
+                                                elevation: 10,
                                                 shadowRadius: 50
                                             }}>
                                                 <Text style={[styles.text, { textAlign: 'center', fontSize: 16 }]}>{(priceNow * 0.01).toFixed(2)} €</Text>
@@ -371,7 +375,7 @@ const ElCarScreen = (props) => {
                                                 justifyContent: 'center',
                                                 shadowColor: "orange",
                                                 //shadowOpacity: 5,
-                                                elevation: 30,
+                                                elevation: 10,
                                                 shadowRadius: 50
                                             }}>
                                                 <Text style={[styles.text, { textAlign: 'center', fontSize: 16}]}>{(priceLimit * 0.01).toFixed(2)} €</Text>
@@ -448,34 +452,43 @@ const ElCarScreen = (props) => {
                     <Grid style={[styles.text, {marginTop:20, marginBottom:50 }]}>
                         <Row>
                             <Col>
-                            <Text style={[styles.text, { fontSize: 20, marginBottom:10, textAlign: 'center' }]}>Energia tiedot: </Text>
+                            <TouchableOpacity
+                                onPress={onPress}
+                                
+                            >
+                            <Text style={[styles.text, { fontSize: 20, marginBottom:10, textAlign: 'center', alignSelf: 'center', justifyContent: 'center' }]}>Energia tiedot: </Text>
+                            </TouchableOpacity>
                             </Col>
     
                         </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Energia nyt: </Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyNow * 0.001).toFixed(2)}kW</Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Tällä latauksella: </Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyThisCharge * 0.001).toFixed(2)}kW</Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Yhteensä: </Text>
-                            </Col>
-                            <Col>
-                                <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyTotal * 0.001).toFixed(2)}kW</Text>
-                            </Col>
-                        </Row>
+                        {showValue ?
+                        <View>
+                            <Row>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Energia nyt: </Text>
+                                </Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyNow * 0.001).toFixed(2)}kW</Text>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Tällä latauksella: </Text>
+                                </Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyThisCharge * 0.001).toFixed(2)}kW</Text>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>Yhteensä: </Text>
+                                </Col>
+                                <Col>
+                                    <Text style={[styles.text, { fontSize: 16, marginLeft:50 }]}>{(energyTotal * 0.001).toFixed(2)}kW</Text>
+                                </Col>
+                            </Row>
+                        </View>
+                        : null}
                     </Grid>
                 </ScrollView>
             </View>

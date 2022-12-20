@@ -172,10 +172,10 @@ const SettingsScreen = () => {
             />
           }
         >
-          <View style={{ marginLeft: 30 }}>
+          <View style={{ marginLeft: 10 }}>
             <View>
               <Text style={[styles.text, { marginTop: 20, fontSize: 18, color: '#d4850e' }]}>Salli push ilmoitukset</Text>
-              <Switch style={{ alignSelf: 'flex-start' }}
+              <Switch style={{ alignSelf: 'flex-start', marginBottom: 10 }}
                 trackColor={{ false: "#767577", true: "#a6d3d8" }}
                 thumbColor={isEnabled ? "orange" : "#f4f3f4"}
                 ios_backgroundColor="#3e3e3e"
@@ -185,37 +185,41 @@ const SettingsScreen = () => {
             </View>
             <View><Text style={styles.text}>Asettamasi hinta rajat: {getValue} snt/kWh - {getUpValue} snt/kWh</Text></View>
             <View>
-              <View style={[{ marginBottom: -20, marginTop: 20 }]}>
+              <View style={[{ marginBottom: 0, marginTop: 20 }]}>
                 <TextInput
                   placeholder="Aseta alaraja"
+                  placeholderTextColor='#d4850e'
+                  theme={{ colors: { text: '#fff' } }}
+                  inputStyle={{color: '#fff'}}
                   maxLength={2}
                   keyboardType="numeric"
                   value={priceLimitDown}
                   onChangeText={(data) => setPriceLimitDown(data)}
                   underlineColorAndroid="transparent"
-                  style={{ margin: 10, backgroundColor: 'orange', paddingLeft: 20, width: 150 }}
+                  style={[styles.input,{ margin: 10, backgroundColor: '#1f2131', borderColor: '#a6d3d8', borderWidth: 1, paddingLeft: 20, width: 125, borderRadius: 10 }]}
                 />
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginRight: 50 }}>
+              <View >
                 <TouchableOpacity onPress={saveValueFunction} style={styles.buttonStyle}>
-                  <Text style={[styles.text, { fontSize: 20, textAlign: 'center', color: 'orange' }]}> Tallenna </Text>
+                  <Text style={[styles.text, { fontSize: 20, color: 'orange', marginRight: 75, marginLeft: 180, elevation: 10, backgroundColor: '#16171D', shadowColor: "#a6d3d8", borderRadius:5}]}> Tallenna </Text>
                 </TouchableOpacity>
               </View>
               <View style={[{ marginBottom: 20 }]}>
                 <TextInput
                   placeholder="Aseta yläraja"
+                  placeholderTextColor='#d4850e'
                   maxLength={2}
                   value={priceLimitUp}
                   keyboardType="numeric"
                   clearButtonMode="always"
                   onChangeText={(data) => setPriceLimitUp(data)}
                   underlineColorAndroid="transparent"
-                  style={{ margin: 10, backgroundColor: 'orange', paddingLeft: 20, width: 150 }}
+                  style={[styles.input,{ margin: 10, backgroundColor: '#1f2131', borderColor: '#a6d3d8', borderWidth: 1, paddingLeft: 20, width: 125, borderRadius: 10 }]}
                 />
               </View>
             </View>
             <View>
-              <Text style={[styles.text, { fontSize: 18, color: '#d4850e' }]}>Datan lähteet: </Text>
+              <Text style={[styles.text, { fontSize: 18, color: '#d4850e', marginTop:20 }]}>Datan lähteet: </Text>
               <Text style={[styles.text, { fontSize: 18 }]}>Fingrid & ENTSO-E</Text>
               <Text style={[styles.text, { fontSize: 18, marginTop: 20, color: '#d4850e' }]}>Tietosuoja:</Text>
               <Text style={[styles.text, { fontSize: 18, marginBottom: 20 }]}>Sovellus ei kerää käyttäjästä mitään henkilökohtaista dataa, ainoa kerättävä data on käyttäjän syöttämät kodinkoneet ja niiden kwh arvot.</Text>

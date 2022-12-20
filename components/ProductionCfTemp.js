@@ -6,6 +6,7 @@ import {
 import {LoadingIcon} from './LoadingIcon';
 import { responsiveWidth } from "react-native-responsive-dimensions";
 import { Entypo } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 
@@ -49,6 +50,10 @@ export function ProductionCfTemp() {
     }
   }
 
+  const onPress1 = () => setTimeFrame(Year);
+  const onPress2 = () => setTimeFrame(halfYear);
+
+
    const GetData = () => {
     fetch('http://www.students.oamk.fi/~n0juro00/MobiiliProjekti/FingridData.php', {
       method: 'POST',
@@ -77,14 +82,30 @@ export function ProductionCfTemp() {
   } else {
   return (
         <View style={{  marginTop: 10}}>
-          <View style={[styles.buttonContainer, {marginBottom: 10}]}>
-            <Button title="Kuluva vuosi" color="#16171D"  onPress={() => setTimeFrame(Year)}></Button>
+          <View>
+          <TouchableOpacity
+              onPress={onPress1}
+              style={styles.button}
+              >
+                <Text style={[styles.text, { color: '#a6d3d8', fontSize: 18 }]}>
+                  Kuluva vuosi
+                </Text>
+          </TouchableOpacity>
           </View>
-        <View style={[styles.buttonContainer, {marginBottom: 10}]}>
-          <Button title="Viimeiset kuusi kuukautta" color="#16171D" onPress={() => setTimeFrame(halfYear)}></Button>
-        </View>
+          <View>
+          <TouchableOpacity
+              onPress={onPress2}
+              style={styles.button}
+              >
+                <Text style={[styles.text, { color: '#a6d3d8', fontSize: 18 }]}>
+                  Viimeiset kuusi kuukautta
+                </Text>
+          </TouchableOpacity>
+          </View>
+          
+        
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-          <Text style={[styles.text, {marginTop: 15}]}>
+          <Text style={[styles.text, {marginTop: 30}]}>
             Kulutus verrattuna lämpötilaan
           </Text>
         </View>
@@ -177,7 +198,19 @@ export function ProductionCfTemp() {
       text: {
         color: '#a6d3d8',
         fontFamily: "MontserratRegular"
-      },  
+      },
+      button: {
+        marginHorizontal: 8,
+        alignItems: 'center',
+        backgroundColor: '#16171D',
+        borderRadius: 10,
+        padding: 5,
+        marginTop: 10,
+        shadowColor: "#a6d3d8",
+        elevation: 8
+      },
+      
       
     });
+    
     

@@ -159,7 +159,7 @@ const PriceListScreen = () => {
 
                         />
                     </View>
-                    <View>
+                    <View style={{marginHorizontal: 8}}>
                         <DropDownPicker
                             theme="DARK"
                             placeholder='Valitse päivä'
@@ -220,14 +220,14 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        elevation: 15,
-        shadowRadius: 50
+        elevation: 12,
+        shadowRadius: 50,
       },
       low: {shadowColor: 'green'},
       middle: {shadowColor: 'orange'},
       high: {shadowColor: 'red'},
       title: {
-        fontSize: 16,
+        fontSize: 18,
         fontFamily: "MontserratRegular",
         color: '#a6d3d8',
     },
