@@ -1,6 +1,7 @@
-import React,{useState} from "react";
+import React,{useState, useEffect} from "react";
 import {SwipeListView} from "react-native-swipe-list-view"
 import {Entypo} from "@expo/vector-icons"
+
 //async storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -14,11 +15,13 @@ import {
     colors
 } from "../styles/appStyles"
 const ListItems = ({appliances,setAppliances,handleTriggerEdit}) => {
-    const [swipedRow, setSwipedRow] = useState(null);
-    
 
-    
+    const [swipedRow, setSwipedRow] = useState(null);
+
+
+
     const handleDeleteAppliance = (rowMap, rowKey)=>{
+
         const newAppliances = [...appliances];
         const applianceIndex = appliances.findIndex((appliance) => appliance.key === rowKey);
         newAppliances.splice(applianceIndex,1);
@@ -45,20 +48,21 @@ const ListItems = ({appliances,setAppliances,handleTriggerEdit}) => {
                             <>
                             <RowText>{data.item.title}</RowText>
                             <KwhValues>{data.item.kwh} kWh</KwhValues>
-                            <Sum></Sum>
+                            <Sum>{data.item.summa} € / h</Sum>
                             </>
                         </ListView>
                     )
                 }} renderHiddenItem={(data,rowMap) => {
                     return(
                         <ListViewHidden>
-                            <HiddenButton onPress={() => handleDeleteAppliance(rowMap, data.item.key)} 
+                            <HiddenButton onPress={() => handleDeleteAppliance(rowMap,data.item.key)} 
                             >
                                 <Entypo name = "trash" size={25} color={colors.secondary} />
                             </HiddenButton>
                         </ListViewHidden>
                     )
                 }}
+                
                 leftOpenValue={80}
                 previewRowKey={"1"}
                 previewOpenValue={80}

@@ -4,6 +4,7 @@ import React, {useEffect, useState} from "react";
 import Header from "./Header";
 import ListItems from "./ListItems";
 import InputModal from "./InputModal";
+import { Alert } from "react-native";
 //async storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Home = ({appliances, setAppliances}) => {
@@ -11,14 +12,59 @@ const Home = ({appliances, setAppliances}) => {
   useEffect(()=> {
     //calculate();
   })
+const info = () => {
+    Alert.alert(
+        //Otsikko
+          'Kuinka lisätä, muokata ja poistaa kodinkone',
+          //Alert teksti
+
+          'Lisää kodinkone painamalla alahaalla olevaa plus painiketta. Muokkaa kodinkonetta napauttamalla kodinkoneen nimeä. Poista yksittäinen kodinkone pyyhkäisemällä vasemmalle poistettavan kodinkoneen kohdalla',
+          [
+            {
+                text: '',
+                onPress: () => console.log('No Pressed'),
+                style: 'cancel',
+              },
+            ,
+            {
+              text: 'Ei',
+              onPress: () => console.log('No Pressed'),
+              style: 'cancel',
+            },
+          ],
+          { cancelable: false }
+          //clicking out side of alert will not cancel
+            );
+        }
 
     //Poista kaikki kodinkoneet
     const handleClearAppliances = () =>{
+        //Tarkistetaan, haluaako käyttäjä varmasti tyhjentää koko listan
+        Alert.alert(
+    //Otsikko
+      'Tyhjennä koko lista',
+      //Alert teksti
+      'Oletko varma, että haluat poistaa kaikki tallentamasi kodinkoneet ja niiden tiedot, jos vastaat kyllä, et voi perua toimintaasi',
+      [
+        { text: 'Kyllä', onPress: () =>  
         AsyncStorage.setItem("storedAppliances",JSON.stringify([])).then(() => {
             setAppliances([]);
         }).catch(error =>
             console.log(error))
-        }
+            
+        } 
+        ,
+        {
+          text: 'Ei',
+          onPress: () => console.log('No Pressed'),
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+      //clicking out side of alert will not cancel
+        );
+    }
+       
 
     //Modal näyttäminen
     const [modalVisible, setModalVisible] = useState(false);
@@ -60,7 +106,7 @@ const Home = ({appliances, setAppliances}) => {
  
     return(
         <>
-        <Header handleClearAppliances={handleClearAppliances} />
+        <Header handleClearAppliances={handleClearAppliances} info={info} />
         <ListItems 
             appliances={appliances}
             setAppliances={setAppliances}
