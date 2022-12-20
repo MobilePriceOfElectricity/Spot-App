@@ -1,4 +1,4 @@
-import {View} from "react-native";
+import {StyleSheet, View, Text} from "react-native";
 import React, { useEffect, useState} from 'react';
 import {
     PieChart,
@@ -95,6 +95,12 @@ import styles from "../styles/styles";
     return ( <LoadingIcon/> )
   } else {
     return (
+      <View>
+        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+          <Text style={[styls.text, {marginTop: 15}]}>
+            Suomen sähkön tuotanto
+          </Text>
+        </View>
       <View style={{backgroundColor:  `rgba(31, 33, 49, 1)`, marginBottom: -10, borderRadius: 8, marginHorizontal:8, marginTop: 15, }}>
           <PieChart
             data={PieChartData}
@@ -106,13 +112,31 @@ import styles from "../styles/styles";
             paddingHorizontal={"100"}
             paddingLeft={20}
             center={[1, 10]}
-            absolute
-            
-            
+            absolute    
           />
-        
+      </View>
       </View>
     )
   }
 }
 
+
+const styls = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    
+  },
+  fadingContainer: {
+    alignSelf: 'center',
+    width: "1%",
+    marginTop: 350
+  },
+  text: {
+    color: '#a6d3d8',
+    fontFamily: "MontserratRegular"
+  },  
+  
+});
