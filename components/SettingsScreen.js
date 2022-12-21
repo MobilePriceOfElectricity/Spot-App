@@ -184,21 +184,22 @@ const SettingsScreen = () => {
             <View>
               <View style={[{ marginBottom: 0, marginTop: 20 }]}>
                 <TextInput
+                
                   placeholder="Aseta alaraja"
                   placeholderTextColor='#d4850e'
-                  theme={{ colors: { text: '#fff' } }}
+                  theme={{ colors: { text: '#a6d3d8' } }}
                   inputStyle={{color: '#fff'}}
                   maxLength={2}
                   keyboardType="numeric"
                   value={priceLimitDown}
                   onChangeText={(data) => setPriceLimitDown(data)}
                   underlineColorAndroid="transparent"
-                  style={[styles.input,{ margin: 10, backgroundColor: '#1f2131', borderColor: '#a6d3d8', borderWidth: 1, paddingLeft: 20, width: 125, borderRadius: 10 }]}
+                  style={[styles.text,{ margin: 10, backgroundColor: '#1f2131', borderColor: '#a6d3d8', borderWidth: 1, paddingLeft: 20, width: 125, borderRadius: 10 }]}
                 />
               </View>
               <View >
                 <TouchableOpacity onPress={saveValueFunction} style={styles.buttonStyle}>
-                  <Text style={[styles.text, { fontSize: 20, color: 'orange', marginRight: 75, marginLeft: 180, elevation: 10, backgroundColor: '#16171D', shadowColor: "#a6d3d8", borderRadius:5}]}> Tallenna </Text>
+                  <Text style={[styles.text, { fontSize: 16, color: '#d4850e', marginRight: 75, marginLeft: 180, elevation: 0, backgroundColor: '#1f2131', shadowColor: "#d4850e", borderRadius:10, borderColor: '#a6d3d8', borderWidth: 1, justifyContent: 'center', textAlign: 'center', padding: 5}]}> Tallenna </Text>
                 </TouchableOpacity>
               </View>
               <View style={[{ marginBottom: 20 }]}>
@@ -211,7 +212,7 @@ const SettingsScreen = () => {
                   clearButtonMode="always"
                   onChangeText={(data) => setPriceLimitUp(data)}
                   underlineColorAndroid="transparent"
-                  style={[styles.input,{ margin: 10, backgroundColor: '#1f2131', borderColor: '#a6d3d8', borderWidth: 1, paddingLeft: 20, width: 125, borderRadius: 10 }]}
+                  style={[styles.text,{ margin: 10, backgroundColor: '#1f2131', borderColor: '#a6d3d8', borderWidth: 1, paddingLeft: 20, width: 125, borderRadius: 10 }]}
                 />
               </View>
             </View>

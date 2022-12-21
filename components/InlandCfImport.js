@@ -6,6 +6,7 @@ import {
 import {
   responsiveWidth
 } from "react-native-responsive-dimensions";
+import styles from '../styles/styles';
 
 const screenWidth = Dimensions.get("window").width;
 const chartConfig = {
@@ -27,7 +28,7 @@ export function InlandCfImport() {
   let asd = 0;
 
   const [data, setData] = useState({
-    labels: ["Suomen sisäinen", "Tuonti"],
+    labels: ["Suomen tuotanto", "Tuonti"],
     datasets: [
       {
         data: PieData
@@ -63,6 +64,11 @@ export function InlandCfImport() {
       return ( <Text/> )
     } else {
   return ( <View >
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                <Text style={[styles.text, {marginTop: 50}]}>
+                  Tuotanto verrattuna ulkomaan tuontiin
+          </Text>
+        </View>
         <View style={{transform: [{rotate: '90deg'}]}}>
         <BarChart
           //showValuesOnTopOfBars={true}
@@ -85,7 +91,8 @@ export function InlandCfImport() {
             padding: 35,
             paddingRight: 40,
             paddingTop: 40,
-            paddingLeft: 20
+            paddingLeft: -20
+            
 
             
           }}

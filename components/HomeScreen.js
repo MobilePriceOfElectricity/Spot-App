@@ -1,6 +1,6 @@
 import React from 'react';
 import "react-native-gesture-handler";
-import { Text, View, ScrollView, RefreshControl } from 'react-native';
+import { Text, Button, View, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { LineChart } from "react-native-chart-kit";
 import { Col, Grid } from 'react-native-easy-grid'
 import moment from 'moment';
@@ -40,6 +40,8 @@ const HomeScreen = () => {
         { label: 'Edelliset 7 vrk', value: 'LastSeven' },
         { label: 'Edelliset 31 vrk', value: 'LastMonth' },
     ]);
+
+    const [titleText, setTitleText] = useState('Tämä päivä');
 
     //Refresh Control
     const [refreshing, setRefreshing] = React.useState(false);
@@ -224,45 +226,17 @@ const HomeScreen = () => {
         });
     }
 
+    const onPressToday = () => [setValue('Today'), setTitleText('Tämä päivä')];
+    const onPressLast = () => [setValue('LastSeven'), setTitleText('Edelliset 7 vrk')];
+    const onPressMonth = () => [setValue('LastMonth'), setTitleText('Edelliset 31 vrk')];
+
     if (!isLoaded) {
         return (<LoadingIcon />)
     } else {
         return (
             <View style={styles.container}>
                 <View style={styles.home}>
-                    <View style={[{ marginBottom: 20, marginTop: 20 }]}>
-                        <RadioForm
-                            //style={theme.radio}
-                            buttonSize={10}
-                            buttonOuterSize={20}
-                            radio_props={alvData}
-                            initial={0}
-                            onPress={(value) => { setAlv(value) }}
-                            buttonColor={'#D4850E'}
-                            selectedButtonColor={'#D4850E'}
-                            labelColor={'#a6d3d8'}
-                            selectedLabelColor={'#a6d3d8'}
-                            formHorizontal={true}
-                            labelHorizontal={false}
-                        />
-                    </View>
-                    <View style={{marginHorizontal: 15}}>
-                        <DropDownPicker
-                            theme="DARK"
-                            placeholder='Tämä päivä'
-                            open={open}
-                            value={value}
-                            items={items}
-                            setOpen={setOpen}
-                            setValue={setValue}
-                            setItems={setItems}
-                            //defaultIndex={0}
-                            containerStyle={{ height: 30 }}
-                            onChangeItem={item => setValue(item.value)}
-                            onChangeValue={onPressTouch}
-                        />
-                    </View>
-                    <ScrollView ref={scrollRef} style={[{ marginBottom: 20, marginTop: 20 }]}
+                    <ScrollView ref={scrollRef} style={[{ marginBottom: 20, marginTop: 0 }]}
                         contentContainerStyle={styles.scrollView}
                         refreshControl={
                             <RefreshControl
@@ -284,9 +258,52 @@ const HomeScreen = () => {
                                     <Text style={[styles.text, {fontSize: 30}]}>{(priceNow * 1).toFixed(2)} snt</Text>
                                 </View>
                             </Col>
+                            <View style={[{ marginBottom: 10, marginTop: 40, marginVertical: 10 }]}>
+                                <RadioForm
+                                    //style={theme.radio}
+                                    buttonSize={10}
+                                    buttonOuterSize={20}
+                                    radio_props={alvData}
+                                    initial={0}
+                                    onPress={(value) => { setAlv(value) }}
+                                    buttonColor={'#D4850E'}
+                                    selectedButtonColor={'#D4850E'}
+                                    labelColor={'#a6d3d8'}
+                                    selectedLabelColor={'#a6d3d8'}
+                                    formHorizontal={true}
+                                    labelHorizontal={false}
+                                />
+                            </View>
+                            <View style={[{ marginBottom: 20, flexDirection: 'row' }]}>
+                            <TouchableOpacity
+                                onPress={onPressToday}
+                                style={styles.button}
+                                >
+                                    <Text style={[styles.text, { color: '#d4850e', fontSize: 18 }]}>
+                                    Tänään
+                                    </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={onPressLast}
+                                style={styles.button}
+                                >
+                                    <Text style={[styles.text, { color: '#d4850e', fontSize: 18 }]}>
+                                    7 vrk
+                                    </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={onPressMonth}
+                                style={styles.button}
+                                >
+                                    <Text style={[styles.text, { color: '#d4850e', fontSize: 18 }]}>
+                                    31 vrk
+                                    </Text>
+                            </TouchableOpacity>
+                            </View>
+                            <Text style={[styles.text, {fontSize: 20, marginTop: 10}]}>{titleText}</Text>
                         </View>
-                        <View  >
-                            <Grid >
+                        <View>
+                            <Grid>
                                 <Col style={{ alignItems: 'center', marginTop: 10 }}>
                                     <Col style={{ alignItems: 'center', marginTop: 10, marginBottom: 30 }}>
                                         <View style={{
@@ -464,4 +481,7 @@ const HomeScreen = () => {
         );
     }
 }
+
+
 export { HomeScreen }
+

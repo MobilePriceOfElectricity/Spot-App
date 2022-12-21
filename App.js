@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import { LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { AntDesign, Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { PriceLimitsScreen } from './components/PriceLimitsScreen';
 import { OwnInfo } from './components/OwnInfo';
 import { ElCarScreen } from './components/ElCarScreen';
@@ -13,7 +15,7 @@ import { useFonts } from 'expo-font';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 const Drawer = createDrawerNavigator();
 
-
+LogBox.ignoreAllLogs();
 export default function DrawerNavigation(props) {
 
   let [fontsLoaded] = useFonts({
@@ -56,17 +58,17 @@ export default function DrawerNavigation(props) {
         <Drawer.Screen
           name="Koti"
           component={HomeScreen}
-          options={{ drawerIcon: () => <AntDesign name="home" size={23} color='#a6d3d8' /> }}
+          options={{ drawerIcon: () => <Entypo name="home" size={24} color='#a6d3d8' /> }}
         />
         <Drawer.Screen
           name="Omat kodinkoneet"
           component={OwnInfo}
-          options={{ drawerIcon: () => <AntDesign name="notification" size={23} color='#a6d3d8' /> }}
+          options={{ drawerIcon: () => <Entypo name="add-to-list" size={24} color='#a6d3d8' /> }}
         />
         <Drawer.Screen
           name="Sähköauto"
           component={ElCarScreen}
-          options={{ drawerIcon: () => <MaterialCommunityIcons name="car-electric" size={23} color='#a6d3d8' /> }}
+          options={{ drawerIcon: () => <MaterialCommunityIcons name="car-electric" size={24} color='#a6d3d8' /> }}
         //initialParams={{hinta: 10}}
         />
         <Drawer.Screen
@@ -76,14 +78,14 @@ export default function DrawerNavigation(props) {
         //initialParams={{hinta: 100}} 
         />
         <Drawer.Screen
-          name="Piirakka"
+          name="Tilastot"
           component={DataScreen}
-          options={{ drawerIcon: () => <Ionicons name="nuclear" size={24} color="#a6d3d8" /> }}
+          options={{ drawerIcon: () => <AntDesign name="piechart" size={24} color="#a6d3d8" /> }}
         />
         <Drawer.Screen
           name="Asetukset"
           component={SettingsScreen}
-          options={{ drawerIcon: () => <AntDesign name="setting" size={23} color='#a6d3d8' /> }}
+          options={{ drawerIcon: () => <Ionicons name="settings-sharp" size={24} color='#a6d3d8' /> }}
         />
 
       </Drawer.Navigator>

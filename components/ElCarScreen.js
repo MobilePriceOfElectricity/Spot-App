@@ -14,7 +14,7 @@ import styles from '../styles/styles';
 
 //Fetch
 import moment from 'moment';
-
+//XIplXOEruiWHEs12bayU9PGWIkzqDsfc
 const TOKEN = 'YOUR API'
 const GET_URL = 'https://202683.api.v3.go-e.io/api/status?token=';
 const POST_URL = 'https://202683.api.v3.go-e.io/api/set?token=';
@@ -298,7 +298,9 @@ const ElCarScreen = (props) => {
                                     <View style={{
                                         width: 155,
                                         height: 155,
-                                        backgroundColor: 'black',
+                                        backgroundColor: '#1f2131',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255, 165, 00, 0.15)',
                                         borderRadius: 100,
                                         alignSelf: 'center',
                                         alignItems: 'center',
@@ -339,7 +341,9 @@ const ElCarScreen = (props) => {
                                                     width: 80,
                                                     height: 80,
                                                     marginBottom: 10,
-                                                    backgroundColor: 'black',
+                                                    backgroundColor: '#1f2131',
+                                                    borderWidth: 1,
+                                                    borderColor: 'rgba(255, 165, 00, 0.15)',
                                                     borderRadius: 100,
                                                     alignSelf: 'center',
                                                     alignItems: 'center',
@@ -361,7 +365,9 @@ const ElCarScreen = (props) => {
                                                     width: 80,
                                                     height: 80,
                                                     marginBottom: 10,
-                                                    backgroundColor: 'black',
+                                                    backgroundColor: '#1f2131',
+                                                    borderWidth: 1,
+                                                    borderColor: 'rgba(255, 165, 00, 0.15)',
                                                     borderRadius: 100,
                                                     alignSelf: 'center',
                                                     alignItems: 'center',

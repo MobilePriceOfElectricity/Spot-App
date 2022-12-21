@@ -28,6 +28,10 @@ export default StyleSheet.create({
     color: '#a6d3d8',
     fontFamily: "MontserratRegular"
   },
+  text2: {
+    color: '#d4850e',
+    fontFamily: "MontserratRegular"
+  },
   item: {
     backgroundColor: '#1f2131',
     padding: 10,
@@ -72,5 +76,20 @@ export default StyleSheet.create({
     justifyContent: 'center',
     shadowOpacity: 5,
     elevation: 30,
-  }
+  },
+  input: {
+    color: '#a6d3d8',
+   },
+   button: {
+    marginHorizontal: 8,
+    alignItems: 'center',
+    backgroundColor: '#1f2131',
+    borderRadius: 10,
+    padding: 5,
+    marginTop: 10,
+    shadowColor: "#d4850e",
+    //elevation: 5
+    borderWidth: 0.5,
+    borderColor: '#d4850e',
+  },
 });

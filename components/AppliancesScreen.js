@@ -27,7 +27,7 @@ const info = () => {
               },
             ,
             {
-              text: 'Ei',
+              text: 'Sulje',
               onPress: () => console.log('No Pressed'),
               style: 'cancel',
             },

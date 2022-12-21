@@ -127,10 +127,10 @@ export const ModalView = styled.View`
 
 export const StyledInput = styled.TextInput`
   width: 300px;
-  height: 50px;
+  height: 60px;
   background-color: ${colors.tertiary};
   padding: 10px;
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 20px;
   border-radius: 10px;
   color: ${colors.secondary};

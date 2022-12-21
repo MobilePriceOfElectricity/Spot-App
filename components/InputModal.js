@@ -134,13 +134,8 @@ for (let i = 0; i < hourPrice.length; i++)
                         
                     />
                     <StyledInput 
-<<<<<<< HEAD
-                        placeholder="kWh"
-                        placeholderTextColor ={colors.primary}
-=======
                         placeholder="Ilmoita kodinkoneen kuluttama kwh/tunti"
                         placeholderTextColor ={colors.alternative}
->>>>>>> 33cd634fe78e442128355e539dd000c12d7cd3f5
                         selectionColor = {colors.secondary}
                         autoFocus={true}
                         keyboardType='numeric'
