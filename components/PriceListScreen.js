@@ -126,7 +126,7 @@ const PriceListScreen = () => {
         );
     };
 
-    const onPressTD = () => [setValue('Today'), setData(today.slice(0, 25), setIsEnabled(true))];
+    const onPressTD = () => [setValue('Today'), setData(today.slice(0, 25), setIsEnabled(false))];
     const onPressTM = () => [setValue('Tomorrow') , setData(nextDay), setIsEnabled(true)];
 
     if (!isLoaded) {
