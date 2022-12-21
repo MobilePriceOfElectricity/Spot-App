@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, RefreshControl, FlatList, SafeAreaView, StyleSheet } from 'react-native';
+import { Text, View, Button,  RefreshControl, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 import RadioForm  from 'react-native-simple-radio-button';
 import moment from 'moment';
 import { useState, useEffect} from 'react';
@@ -15,18 +15,20 @@ const wait = (timeout) => {
 }
 
 const PriceListScreen = () => {
-    const [isLoaded, setIsLoaded] = useState();
+    const [isLoaded, setIsLoaded] = useState(false);
     const [today, setToday] = useState([])
     const [nextDay, setNextDay] = useState([])
-    const [data, setData] = useState(today.slice(0, 25))
+    const [data, setData] = useState()
     const [hour, setHour] = useState();
     const [alv, setAlv] = useState(24);
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState('Today');
     const [items, setItems] = useState([
         { label: 'Tämä päivä', value: 'Today' },
         { label: 'Seuraava päivä (julkaistaan klo 14)', value: 'Tomorrow' },
     ]);
+
+    const [isEnabled, setIsEnabled] = useState(false);
 
     //Refresh Control
     const [refreshing, setRefreshing] = React.useState(false);
@@ -49,7 +51,7 @@ const PriceListScreen = () => {
             .then((res) => {
                 setToday(res[0]['24h'])
             })
-        setIsLoaded(true)
+            .finally(setIsLoaded(true))
     }
 
     const fetchNextDay = () => {
@@ -67,7 +69,7 @@ const PriceListScreen = () => {
             .then((res) => {
                 setNextDay(res[0]['24h'])
             })
-        setIsLoaded(true)
+            .finally(setIsLoaded(true))
     }
 
     useEffect(() => {
@@ -75,7 +77,6 @@ const PriceListScreen = () => {
         fetchNextDay()
         let curDate = moment().utcOffset('+02:00').format('YYYYMMDDHH00');
         setHour(curDate.substring(8, 10))
-        setDataToRender()
         getValueFunction()
         getUpValueFunction()
     }, [])
@@ -99,14 +100,6 @@ const PriceListScreen = () => {
     const renderItem = ({ item }) => (
         <Item time={item.time} price={item.price} />
     );
-
-    const setDataToRender = () => {
-        if (value === 'Today' || value === undefined) {
-            setData(today.slice(0, 25))
-        } if (value === 'Tomorrow') {
-            setData(nextDay)
-        }
-    }
 
     //Refresh Control
     const onRefresh = React.useCallback(() => {
@@ -137,37 +130,11 @@ const PriceListScreen = () => {
     } else {
         return (
             <View style={styles.home}>
-                <View style={[{ marginBottom: 20, marginTop: 20 }]}>
-                    <RadioForm
-                        //style={theme.radio}
-                        buttonSize={10}
-                        buttonOuterSize={20}
-                        radio_props={alvData}
-                        initial={0}
-                        onPress={(value) => { setAlv(value) }}
-                        buttonColor={'#D4850E'}
-                        selectedButtonColor={'#D4850E'}
-                        labelColor={'#a6d3d8'}
-                        selectedLabelColor={'#a6d3d8'}
-                        formHorizontal={true}
-                        labelHorizontal={false}
-                    />
+                <View style={[{ marginBottom: 20, marginTop: 20, flexDirection: 'row' }]}>
+                    <Button title="Tämä päivä" onPress={() => [setValue('Today'), setData(today.slice(0, 25), setIsEnabled(true))]} ></Button>
+                    <Button title="Seuraava päivä" onPress={() => [setValue('Tomorrow') , setData(nextDay), setIsEnabled(true)]}></Button>
                 </View>
-                <View>
-                    <DropDownPicker
-                        theme="DARK"
-                        placeholder='Valitse päivä'
-                        open={open}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
-                        containerStyle={{ height: 30 }}
-                        onChangeItem={item => setValue(item.value)}
-                        onChangeValue={val => setDataToRender(val)}
-                    />
-                </View>
+                <Text>{isEnabled ? 'Huomisen hinnat' : 'Tämän päivän hinnat'}</Text>
                 <SafeAreaView style={[styles.container, { marginTop: 30 }]}>
                     <FlatList
                         contentContainerStyle={styles.scrollView}
@@ -180,7 +147,7 @@ const PriceListScreen = () => {
                                 progressBackgroundColor={"black"}
                             />
                         }
-                        data={data}
+                        data={isEnabled ? data : today.slice(0, 25)}
                         renderItem={renderItem}
                         keyExtractor={item => item.time}
                     />
